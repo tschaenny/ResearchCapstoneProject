@@ -1,4 +1,5 @@
 import { f1, polar, ringDiamonds, ringTriangles, uid } from './primitives.js';
+import { $ } from '../core/dom.js';
 
 /* The basket: coiled mokola palm with named pattern bands */
 export function basketArt({ bg = '#EADFCB', size = 400, label = 'Coiled basket, top view' } = {}) {

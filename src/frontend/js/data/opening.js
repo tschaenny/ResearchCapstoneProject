@@ -1,6 +1,7 @@
 import { fromKey, hh } from '../core/format.js';
 import { gabNow } from '../core/time.js';
 import { HOLIDAYS, HOURS } from './constants.js';
+import { DAYNAME } from '../core/time.js';
 
 /* When is the museum open? Reads the HOURS / HOLIDAYS reference data, so this
    sits in data/ rather than core/ -- core/time.js stays free of museum
