@@ -147,7 +147,7 @@ export function tkConfirm() {
   store.T.err = err;
   if (Object.keys(err).length) { tkRerender(); const first = err.name ? '#f-name' : err.email ? '#f-email' : '#f-agree'; $(first).focus(); return; }
   const code = 'BNM-' + Array.from({ length: 5 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  const b = { code, date: store.T.date, hour: store.T.hour, q: { ...store.T.q }, visitors: visitorsOf(store.T.q), total: totalOf(store.T.q), name: store.T.name, email: store.T.email, country: store.T.country, created: Date.now(), checkedIn: false };
+  const b = { code, date: store.T.date, hour: store.T.hour, q: { ...store.T.q }, visitors: visitorsOf(store.T.q), total: totalOf(store.T.q), name: store.T.name, email: store.T.email, phone: store.T.phone, country: store.T.country, created: Date.now(), checkedIn: false };
   store.S.bookings.push(b); save();
   store.T.done = b; store.T.step = 4; tkRerender(true);
 }

@@ -18,6 +18,7 @@ import { TOUR_TIMES } from '../data/constants.js';
 import { fresh, save } from '../data/local.js';
 import { newT, visitorsOf } from '../state/booking.js';
 import { byId } from '../state/selectors.js';
+import { newQuery } from '../state/query.js';
 
 /* ---------------- events ---------------- */
 document.addEventListener('click', (e) => {
@@ -37,7 +38,7 @@ document.addEventListener('click', (e) => {
   const act = t.dataset.act;
   switch (act) {
     case 'reset':
-      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) { store.S = fresh(); save(); store.T = newT(); store.CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' }; route(); toast('Demo data reset.'); }
+      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) { store.S = fresh(); save(); store.T = newT(); store.CQ = newQuery(); route(); toast('Demo data reset.'); }
       break;
     case 'lang-tn': toast('Setswana version is planned for phase 2 – Re a leboga!'); break;
     case 'toast': toast(t.dataset.msg); break;
@@ -74,10 +75,10 @@ document.addEventListener('click', (e) => {
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
     case 'dept': store.CQ.dept = t.dataset.v; renderResults(); break;
-    case 'dept-link': store.CQ = { q: '', dept: t.dataset.v, display: false, sort: 'inv', room: 'All' }; break;
-    case 'room': store.CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: t.dataset.id }; if (location.hash === '#/collection') route(); else location.hash = '#/collection'; break;
+    case 'dept-link': store.CQ = newQuery({ dept: t.dataset.v }); break;
+    case 'room': store.CQ = newQuery({ room: t.dataset.id }); if (location.hash === '#/collection') route(); else location.hash = '#/collection'; break;
     case 'display': store.CQ.display = !store.CQ.display; renderResults(); break;
-    case 'clear-search': store.CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' }; $('#cq').value = ''; if ($('#locf')) $('#locf').value = 'All'; renderResults(); break;
+    case 'clear-search': store.CQ = newQuery(); $('#cq').value = ''; if ($('#locf')) $('#locf').value = 'All'; renderResults(); break;
     case 'del': {
       const o = byId(t.dataset.id);
       if (o && confirm(`Delete “${o.title}” (${o.id})? Its QR code will stop working.`)) { store.S.objects = store.S.objects.filter((x) => x.id !== o.id); save(); route(); toast(`Deleted ${o.id}.`); }
@@ -93,7 +94,7 @@ document.addEventListener('submit', (e) => {
   const f = e.target;
   if (f.id === 'topsearch' || f.id === 'teasersearch') {
     e.preventDefault(); const q = (f.querySelector('input').value || '').trim();
-    store.CQ = { q, dept: 'All', display: false, sort: 'inv' };
+    store.CQ = newQuery({ q });
     if (location.hash === '#/collection') route(); else location.hash = '#/collection';
   } else if (f.id === 'colsearch') {
     e.preventDefault(); store.CQ.q = $('#cq').value.trim(); renderResults();

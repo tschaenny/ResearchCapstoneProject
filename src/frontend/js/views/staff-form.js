@@ -5,7 +5,7 @@ import { pageNotFound } from './notfound.js';
 import { staffShell } from './staff-shell.js';
 import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
-import { pad } from '../core/format.js';
+import { pad4 } from '../core/format.js';
 import { DEPTS, LOCATIONS } from '../data/constants.js';
 import { save } from '../data/local.js';
 import { byId, deptCode, objectURL } from '../state/selectors.js';
@@ -14,7 +14,7 @@ import { published } from '../state/selectors.js';
 export function nextInv(dept) {
   const code = deptCode(dept);
   const nums = store.S.objects.filter((o) => o.id.startsWith(`BNM-${code}-`)).map((o) => parseInt(o.id.split('-')[2], 10) || 0);
-  return `BNM-${code}-${pad(Math.max(0, ...nums) + 1).padStart(4, '0')}`;
+  return `BNM-${code}-${pad4(Math.max(0, ...nums) + 1)}`;
 }
 export function pageStaffForm(editId) {
   const o = editId ? byId(editId) : null;

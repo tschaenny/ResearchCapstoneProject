@@ -3,7 +3,13 @@ import { published, roomOf } from './selectors.js';
 import { store } from './store.js';
 
 /* ---------------- collection ---------------- */
-store.CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' };
+/* One factory for the query object. Four call sites used to build this
+   literal by hand and the masthead search forgot `room`, leaving it
+   undefined -- so searching from the header silently disabled the
+   "Where in the museum" filter. */
+export const newQuery = (over = {}) => ({ q: '', dept: 'All', display: false, sort: 'inv', room: 'All', ...over });
+
+store.CQ = newQuery();
 export function matches(o, q) { if (!q) return true; const hay = [o.title, o.origin, o.material, o.text, o.id, o.dept, o.date, o.location].join(' ').toLowerCase(); return q.toLowerCase().split(/\s+/).every((w) => hay.includes(w)); }
 export function filtered(ignoreDept = false) {
   let list = published().filter((o) => matches(o, store.CQ.q) && (!store.CQ.display || o.onDisplay));

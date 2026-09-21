@@ -12,8 +12,8 @@ export function exArtwork(e) { return (EX_ART[e.art] || genericArt)(e); }
 /* ---------- derived views: detail crop and gallery scene ---------- */
 export function innerOf(svg) { return svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, ''); }
 export function cropArt(svg) { return svg.replace('viewBox="0 0 400 400"', 'viewBox="116 116 168 168"'); }
-export function roomScene(svg) {
-  return `<svg viewBox="0 0 400 400" role="img" aria-label="The object on display in the gallery">
+export function roomScene(svg, o = null) {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="${esc(o && o.location ? `The object on display in ${o.location}` : 'The object on display in the gallery')}">
     <rect width="400" height="400" fill="#E6E8EA"/>
     <rect y="300" width="400" height="100" fill="#CFC7BA"/>
     <rect y="296" width="400" height="6" fill="#B6AE9F"/>
@@ -43,4 +43,4 @@ export function viewsOf(o) {
   ];
 }
 
-export function pic(o) { const src = (o.images && o.images[0]) || o.image; if (src) return `<img src="${src}" alt="${esc(o.title)}">`; return (ART[o.art] || ART.generic)(o); }
+export function pic(o) { const src = (o.images && o.images[0]) || o.image; if (src) return `<img src="${esc(src)}" alt="${esc(o.title)}">`; return (ART[o.art] || ART.generic)(o); }
