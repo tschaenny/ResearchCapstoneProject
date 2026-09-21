@@ -15,10 +15,12 @@ import { store } from '../state/store.js';
 import { viewsOf } from '../art/registry.js';
 import { $ } from '../core/dom.js';
 import { TOUR_TIMES } from '../data/constants.js';
-import { fresh, save } from '../data/local.js';
+import { save } from '../data/local.js';
+import * as repo from '../data/repo.js';
 import { newT, visitorsOf } from '../state/booking.js';
 import { byId } from '../state/selectors.js';
 import { newQuery } from '../state/query.js';
+import { pageStaffLogin } from '../views/staff-login.js';
 
 /* ---------------- events ---------------- */
 document.addEventListener('click', (e) => {
@@ -38,7 +40,16 @@ document.addEventListener('click', (e) => {
   const act = t.dataset.act;
   switch (act) {
     case 'reset':
-      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) { store.S = fresh(); save(); store.T = newT(); store.CQ = newQuery(); route(); toast('Demo data reset.'); }
+      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) {
+        repo.resetDemo().then(() => {
+          store.T = newT(); store.CQ = newQuery(); route();
+          toast('Demo data reset.');
+        }).catch(() => toast('Could not reset the demo data.'));
+      }
+      break;
+    case 'logout':
+      e.preventDefault();
+      repo.logout().then(() => { location.hash = '#/'; route(); toast('Signed out.'); });
       break;
     case 'lang-tn': toast('Setswana version is planned for phase 2 – Re a leboga!'); break;
     case 'toast': toast(t.dataset.msg); break;
@@ -91,6 +102,23 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'stafflogin') {
+    e.preventDefault();
+    const form = e.target;
+    const user = form.querySelector('#l-user').value.trim();
+    const pass = form.querySelector('#l-pass').value;
+    repo.login(user, pass)
+      .then(() => { location.hash = '#/staff'; route(); })
+      .catch((err) => {
+        $('#app').innerHTML = pageStaffLogin(
+          err && err.status === 401
+            ? 'Incorrect username or password.'
+            : 'Could not sign in. Please try again.',
+        );
+        $('#l-user').focus();
+      });
+    return;
+  }
   const f = e.target;
   if (f.id === 'topsearch' || f.id === 'teasersearch') {
     e.preventDefault(); const q = (f.querySelector('input').value || '').trim();

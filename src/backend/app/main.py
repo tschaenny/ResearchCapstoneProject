@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from .static import AppStatic
 
 from .config import FRONTEND_DIR, settings
 from .db import SessionLocal
@@ -60,15 +60,16 @@ for r in (health.router, config.router, objects.router, programme.router,
 # No SPA catch-all is needed: the router is hash-based, so every URL the
 # browser asks for is "/" plus a fragment the server never sees.
 settings.upload_dir.mkdir(parents=True, exist_ok=True)
-app.mount("/css", StaticFiles(directory=FRONTEND_DIR / "css"), name="css")
-app.mount("/js", StaticFiles(directory=FRONTEND_DIR / "js"), name="js")
-app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")
-app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
+app.mount("/css", AppStatic(directory=FRONTEND_DIR / "css"), name="css")
+app.mount("/js", AppStatic(directory=FRONTEND_DIR / "js"), name="js")
+app.mount("/assets", AppStatic(directory=FRONTEND_DIR / "assets"), name="assets")
+app.mount("/uploads", AppStatic(directory=settings.upload_dir), name="uploads")
 
 
 @app.get("/", include_in_schema=False)
 def index() -> FileResponse:
-    return FileResponse(FRONTEND_DIR / "html" / "index.html")
+    return FileResponse(FRONTEND_DIR / "html" / "index.html",
+                        headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/o/{object_id}", include_in_schema=False)
@@ -79,4 +80,5 @@ def short_link(object_id: str) -> FileResponse:
     object page. Kept separate from "/" so the path can later redirect or
     log without touching the SPA.
     """
-    return FileResponse(FRONTEND_DIR / "html" / "index.html")
+    return FileResponse(FRONTEND_DIR / "html" / "index.html",
+                        headers={"Cache-Control": "no-cache"})

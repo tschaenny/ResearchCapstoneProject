@@ -22,6 +22,8 @@ import { $ } from '../core/dom.js';
 import { PAGES } from '../data/constants.js';
 import { newT } from '../state/booking.js';
 import { byId, tourById } from '../state/selectors.js';
+import { isOnline } from '../data/repo.js';
+import { pageStaffLogin } from '../views/staff-login.js';
 
 /* ---------------- router ---------------- */
 export function route() {
@@ -43,6 +45,12 @@ export function route() {
     case 'tour': html = pageTour(b); title = (tourById(b) || {}).title || 'Tour'; break;
     case 'object': html = pageObject(b); title = (byId(b) || {}).title || 'Object'; break;
     case 'staff':
+      /* Guard. Online, the staff area needs a session -- the API enforces
+         this too, so this only saves a pointless round trip and a flash of
+         an empty table. Offline there is no server to sign in to, so the
+         area stays open for demos, with the banner saying so. */
+      if (b === 'login') { html = pageStaffLogin(); title = 'Staff sign-in'; break; }
+      if (isOnline() && !store.api.user) { location.hash = '#/staff/login'; return; }
       if (b === 'add') { html = pageStaffForm(null); after = () => bindForm(null); title = 'Add object'; }
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }

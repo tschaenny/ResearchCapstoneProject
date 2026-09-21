@@ -7,6 +7,7 @@ import { $, esc } from '../core/dom.js';
 import { byId, objectURL, published, roomOf, toursOf } from '../state/selectors.js';
 import { store } from '../state/store.js';
 import { objCard } from '../ui/cards.js';
+import { request } from '../data/api.js';
 
 /* ---------------- object ---------------- */
 export function pageObject(id) {
