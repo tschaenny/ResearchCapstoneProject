@@ -1,0 +1,1796 @@
+import qrcode from './vendor/qrcode.js';
+
+/* ------------------------------------------------------------------
+   Illustrations (stand-ins until the museum's digitised photos arrive)
+   All generated as inline SVG — no external images.
+------------------------------------------------------------------- */
+let _uid = 0;
+const uid = (p) => p + (++_uid);
+const f1 = (n) => Math.round(n * 10) / 10;
+const polar = (cx, cy, r, a) => [f1(cx + r * Math.cos(a)), f1(cy + r * Math.sin(a))];
+
+function ringTriangles(cx, cy, r0, r1, n, fill, offset = 0, inward = false) {
+  let s = '';
+  const step = (Math.PI * 2) / n;
+  for (let i = 0; i < n; i++) {
+    const a = i * step + offset;
+    const base0 = polar(cx, cy, inward ? r1 : r0, a);
+    const base1 = polar(cx, cy, inward ? r1 : r0, a + step);
+    const tip = polar(cx, cy, inward ? r0 : r1, a + step / 2);
+    s += `<polygon points="${base0} ${base1} ${tip}" fill="${fill}"/>`;
+  }
+  return s;
+}
+function ringDiamonds(cx, cy, r, len, n, fill, width = 0.07, offset = 0) {
+  let s = '';
+  const step = (Math.PI * 2) / n;
+  for (let i = 0; i < n; i++) {
+    const a = i * step + offset;
+    const p1 = polar(cx, cy, r - len / 2, a);
+    const p2 = polar(cx, cy, r, a - width);
+    const p3 = polar(cx, cy, r + len / 2, a);
+    const p4 = polar(cx, cy, r, a + width);
+    s += `<polygon points="${p1} ${p2} ${p3} ${p4}" fill="${fill}"/>`;
+  }
+  return s;
+}
+
+/* The basket: coiled mokola palm with named pattern bands */
+function basketArt({ bg = '#EADFCB', size = 400, label = 'Coiled basket, top view' } = {}) {
+  const c = 200;
+  let rings = '';
+  for (let r = 10; r <= 178; r += 6.5) rings += `<circle cx="${c}" cy="${c}" r="${f1(r)}" fill="none" stroke="#B98F57" stroke-width="1.1" opacity=".75"/>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="${label}">
+    ${bg ? `<rect width="400" height="400" fill="${bg}"/>` : ''}
+    <circle cx="${c}" cy="${c}" r="180" fill="#D9B882"/>
+    ${rings}
+    ${ringTriangles(c, c, 142, 170, 40, '#4A2E1D')}
+    ${ringDiamonds(c, c, 118, 22, 30, '#7A3F1B', 0.075)}
+    ${ringTriangles(c, c, 62, 90, 22, '#4A2E1D', 0.14, true)}
+    <circle cx="${c}" cy="${c}" r="26" fill="#4A2E1D"/>
+    <circle cx="${c}" cy="${c}" r="12" fill="#D9B882"/>
+    <circle cx="${c}" cy="${c}" r="180" fill="none" stroke="#7E532A" stroke-width="7"/>
+  </svg>`;
+}
+
+function emblem() {
+  const c = 24;
+  return `<svg viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="24" r="23" fill="#121417"/>
+    ${ringTriangles(c, c, 13, 21, 14, '#6DA9D2')}
+    <circle cx="24" cy="24" r="11" fill="#fff"/>
+    <circle cx="24" cy="24" r="4.5" fill="#121417"/>
+  </svg>`;
+}
+
+function rockArt(o = {}) {
+  const fig = (x, y, s = 1, bow = true) => `
+    <g transform="translate(${x} ${y}) scale(${s})" stroke="#8E3B1F" stroke-linecap="round" fill="none">
+      <circle cx="0" cy="-34" r="6" fill="#8E3B1F" stroke="none"/>
+      <line x1="0" y1="-27" x2="2" y2="4" stroke-width="5"/>
+      <line x1="2" y1="4" x2="-9" y2="30" stroke-width="4"/>
+      <line x1="2" y1="4" x2="14" y2="28" stroke-width="4"/>
+      <line x1="0" y1="-20" x2="14" y2="-10" stroke-width="3"/>
+      ${bow ? '<path d="M14,-28 Q30,-10 14,8" stroke-width="2.5"/>' : '<line x1="0" y1="-20" x2="-12" y2="-6" stroke-width="3"/>'}
+    </g>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Rock painting: eland and human figures">
+    <rect width="400" height="400" fill="#C9A07A"/>
+    <ellipse cx="80" cy="70" rx="110" ry="60" fill="#BE9470" opacity=".55"/>
+    <ellipse cx="330" cy="330" rx="120" ry="80" fill="#B88C66" opacity=".5"/>
+    <ellipse cx="300" cy="80" rx="70" ry="40" fill="#D4AE88" opacity=".6"/>
+    <polyline points="0,250 60,238 110,262 170,252" fill="none" stroke="#A67A55" stroke-width="2" opacity=".7"/>
+    <polyline points="250,40 272,90 262,140" fill="none" stroke="#A67A55" stroke-width="2" opacity=".6"/>
+    <g fill="#8E3B1F">
+      <ellipse cx="200" cy="190" rx="80" ry="38"/>
+      <ellipse cx="160" cy="166" rx="36" ry="24"/>
+      <polygon points="136,178 104,132 122,120 166,160"/>
+      <ellipse cx="104" cy="126" rx="18" ry="10" transform="rotate(-28 104 126)"/>
+      <path d="M130,190 Q124,214 138,222 L150,206 Z"/>
+    </g>
+    <g stroke="#8E3B1F" stroke-linecap="round">
+      <line x1="104" y1="118" x2="114" y2="86" stroke-width="3.5"/>
+      <line x1="97" y1="120" x2="100" y2="88" stroke-width="3.5"/>
+      <line x1="156" y1="218" x2="150" y2="292" stroke-width="8"/>
+      <line x1="178" y1="222" x2="182" y2="296" stroke-width="8"/>
+      <line x1="232" y1="222" x2="238" y2="292" stroke-width="8"/>
+      <line x1="256" y1="216" x2="268" y2="288" stroke-width="8"/>
+      <line x1="278" y1="182" x2="296" y2="220" stroke-width="3"/>
+    </g>
+    <ellipse cx="205" cy="200" rx="52" ry="14" fill="#EBD9C2" opacity=".7"/>
+    ${fig(318, 312, 1)} ${fig(352, 322, 0.9)} ${fig(62, 330, 0.8, false)}
+  </svg>`;
+}
+
+function stoneToolArt() {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Stone hand axe">
+    <rect width="400" height="400" fill="#E6E1D8"/>
+    <ellipse cx="200" cy="344" rx="84" ry="10" fill="#000" opacity=".08"/>
+    <path d="M200,58 C258,92 292,204 272,292 C260,338 140,338 128,292 C108,204 142,92 200,58 Z" fill="#91877A"/>
+    <g fill="#A29889"><polygon points="200,62 232,120 196,170 168,112"/><polygon points="160,190 204,228 180,300 136,270"/><polygon points="236,180 268,250 232,318 214,248"/></g>
+    <g fill="#7D7467"><polygon points="232,120 262,190 236,180 196,170"/><polygon points="168,112 196,170 160,190 136,168"/><polygon points="204,228 236,180 214,248 180,300"/></g>
+    <path d="M200,58 C258,92 292,204 272,292 C260,338 140,338 128,292 C108,204 142,92 200,58 Z" fill="none" stroke="#6C645A" stroke-width="2"/>
+    <g font-family="Archivo, Arial, sans-serif" font-size="12" fill="#5E6770"><line x1="300" y1="370" x2="356" y2="370" stroke="#5E6770" stroke-width="2"/><line x1="300" y1="365" x2="300" y2="375" stroke="#5E6770" stroke-width="2"/><line x1="356" y1="365" x2="356" y2="375" stroke="#5E6770" stroke-width="2"/><text x="328" y="360" text-anchor="middle">5 cm</text></g>
+  </svg>`;
+}
+
+function beadsArt() {
+  let b = '';
+  const n = 36;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const [x, y] = polar(200, 196, 128, a);
+    const [x2, y2] = [x, f1(196 + (y - 196) * 0.82)];
+    b += `<circle cx="${x2}" cy="${y2}" r="11.5" fill="#F7EFE2" stroke="#B9A487" stroke-width="2"/><circle cx="${x2}" cy="${y2}" r="3" fill="#A58F70"/>`;
+  }
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="String of ostrich eggshell beads">
+    <rect width="400" height="400" fill="#E9DFCE"/>
+    <ellipse cx="200" cy="196" rx="128" ry="105" fill="none" stroke="#7A5B3A" stroke-width="2"/>
+    ${b}
+    <path d="M200,301 q-6,30 -18,48 M200,301 q6,30 20,44" stroke="#7A5B3A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function potArt() {
+  const id = uid('pc');
+  let zig = '';
+  for (let x = 80, up = true; x <= 320; x += 14, up = !up) zig += `${x},${up ? 152 : 172} `;
+  let dots = '';
+  for (let x = 96; x <= 304; x += 12) dots += `<circle cx="${x}" cy="186" r="2.6" fill="#5B2F18"/>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Clay storage pot">
+    <defs><clipPath id="${id}"><path d="M140,110 L260,110 L256,128 C330,160 338,262 280,318 C250,346 150,346 120,318 C62,262 70,160 144,128 Z"/></clipPath></defs>
+    <rect width="400" height="400" fill="#E8D8C2"/>
+    <ellipse cx="200" cy="340" rx="104" ry="12" fill="#000" opacity=".09"/>
+    <path d="M140,110 L260,110 L256,128 C330,160 338,262 280,318 C250,346 150,346 120,318 C62,262 70,160 144,128 Z" fill="#9A5A36"/>
+    <g clip-path="url(#${id})">
+      <rect x="236" y="100" width="120" height="260" fill="#7E4426" opacity=".45"/>
+      <rect x="60" y="100" width="46" height="260" fill="#7E4426" opacity=".3"/>
+      <polyline points="${zig}" fill="none" stroke="#5B2F18" stroke-width="3.5" stroke-linejoin="round"/>
+      ${dots}
+    </g>
+    <ellipse cx="200" cy="110" rx="60" ry="12" fill="#7A4027"/>
+    <ellipse cx="200" cy="110" rx="49" ry="8" fill="#3A2016"/>
+  </svg>`;
+}
+
+function segabaArt() {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Segaba, a one-string fiddle">
+    <rect width="400" height="400" fill="#E9DCC6"/>
+    <line x1="84" y1="336" x2="322" y2="70" stroke="#6B4226" stroke-width="11" stroke-linecap="round"/>
+    <line x1="104" y1="300" x2="316" y2="80" stroke="#2A2A2A" stroke-width="1.6"/>
+    <g transform="translate(126 290) rotate(-48)">
+      <rect x="-44" y="-34" width="88" height="68" rx="6" fill="#A7ABAF"/>
+      <rect x="-44" y="-34" width="88" height="68" rx="6" fill="none" stroke="#7E8387" stroke-width="2"/>
+      <line x1="-44" y1="-14" x2="44" y2="-14" stroke="#8C9195" stroke-width="3"/>
+      <line x1="-44" y1="14" x2="44" y2="14" stroke="#8C9195" stroke-width="3"/>
+      <ellipse cx="44" cy="0" rx="8" ry="34" fill="#C3C6C9"/>
+    </g>
+    <path d="M150,110 Q280,120 338,258" fill="none" stroke="#6B4226" stroke-width="6" stroke-linecap="round"/>
+    <line x1="152" y1="116" x2="334" y2="252" stroke="#D8CBB3" stroke-width="2"/>
+    <circle cx="318" cy="76" r="8" fill="#4A2E1D"/>
+  </svg>`;
+}
+
+function stoolArt() {
+  let notches = '';
+  for (let x = 92; x <= 308; x += 18) notches += `<line x1="${x}" y1="164" x2="${x + 9}" y2="178" stroke="#4E2C17" stroke-width="2.5"/>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Carved wooden stool">
+    <rect width="400" height="400" fill="#E8DCCB"/>
+    <ellipse cx="200" cy="330" rx="130" ry="16" fill="#000" opacity=".08"/>
+    <polygon points="120,176 150,176 136,318 104,318" fill="#6E4125"/>
+    <polygon points="250,176 280,176 296,318 264,318" fill="#6E4125"/>
+    <polygon points="186,176 214,176 214,322 186,322" fill="#7A4A2A"/>
+    <ellipse cx="200" cy="318" rx="110" ry="14" fill="#5F371F"/>
+    <path d="M80,150 L80,172 C80,196 320,196 320,172 L320,150 Z" fill="#6E4125"/>
+    <ellipse cx="200" cy="150" rx="120" ry="30" fill="#8A5530"/>
+    <ellipse cx="200" cy="146" rx="96" ry="20" fill="#9A6239"/>
+    ${notches}
+  </svg>`;
+}
+
+function paintingArt() {
+  const id = uid('pa');
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Painting of a village kgotla at sunrise">
+    <defs><clipPath id="${id}"><rect x="66" y="86" width="268" height="198"/></clipPath></defs>
+    <rect width="400" height="400" fill="#EEF1F3"/>
+    <rect x="44" y="306" width="312" height="10" fill="#000" opacity=".05"/>
+    <rect x="50" y="70" width="300" height="230" fill="#3A2A1E"/>
+    <g clip-path="url(#${id})">
+      <rect x="66" y="86" width="268" height="198" fill="#EBC07A"/>
+      <circle cx="274" cy="150" r="26" fill="#D0692E"/>
+      <path d="M66,214 C120,188 170,200 214,190 C262,180 300,196 334,186 L334,284 L66,284 Z" fill="#9E7147"/>
+      <rect x="66" y="232" width="268" height="52" fill="#B98E57"/>
+      <rect x="146" y="176" width="8" height="64" fill="#3B2A1C"/>
+      <ellipse cx="150" cy="172" rx="58" ry="14" fill="#3E4A2C"/>
+      <g fill="#3B2A1C"><circle cx="118" cy="232" r="5"/><rect x="113" y="237" width="10" height="16"/><circle cx="140" cy="236" r="5"/><rect x="135" y="241" width="10" height="14"/><circle cx="170" cy="234" r="5"/><rect x="165" y="239" width="10" height="16"/><circle cx="192" cy="238" r="5"/><rect x="187" y="243" width="10" height="13"/></g>
+      <rect x="250" y="222" width="36" height="24" fill="#C98A4B"/><polygon points="244,224 268,200 292,224" fill="#6B4E2E"/>
+    </g>
+    <rect x="170" y="324" width="60" height="14" fill="#D8DEE3"/>
+  </svg>`;
+}
+
+function tapestryArt() {
+  let tassels = '';
+  for (let x = 76; x <= 324; x += 8) tassels += `<line x1="${x}" y1="330" x2="${x}" y2="350" stroke="#8C4617" stroke-width="2"/>`;
+  const cow = (x, y) => `<g transform="translate(${x} ${y})" fill="#4A2E1D"><rect x="0" y="0" width="44" height="20" rx="6"/><rect x="40" y="-6" width="14" height="12" rx="3"/><line x1="44" y1="-6" x2="40" y2="-14" stroke="#4A2E1D" stroke-width="3"/><line x1="52" y1="-6" x2="58" y2="-14" stroke="#4A2E1D" stroke-width="3"/><rect x="4" y="18" width="5" height="14"/><rect x="34" y="18" width="5" height="14"/></g>`;
+  const hut = (x, y) => `<g transform="translate(${x} ${y})"><rect x="0" y="0" width="46" height="34" fill="#B5652B"/><polygon points="-8,2 23,-26 54,2" fill="#4A2E1D"/><rect x="17" y="12" width="12" height="22" fill="#4A2E1D"/></g>`;
+  const person = (x, y) => `<g transform="translate(${x} ${y})"><circle cx="0" cy="0" r="7" fill="#4A2E1D"/><polygon points="-12,34 0,8 12,34" fill="#1B5782"/></g>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Woven tapestry showing village life">
+    <rect width="400" height="400" fill="#E7DCCB"/>
+    <rect x="60" y="50" width="280" height="8" rx="4" fill="#4A2E1D"/>
+    <rect x="72" y="58" width="256" height="272" fill="#DCC6A2"/>
+    <rect x="80" y="66" width="240" height="256" fill="none" stroke="#8C4617" stroke-width="6"/>
+    <circle cx="270" cy="108" r="20" fill="#B5652B"/>
+    <path d="M86,120 L130,120 M96,132 L150,132" stroke="#6DA9D2" stroke-width="6"/>
+    ${hut(104, 168)} ${hut(186, 176)}
+    <rect x="86" y="236" width="228" height="80" fill="#C9A06A"/>
+    ${cow(106, 262)} ${cow(206, 272)}
+    ${person(270, 196)} ${person(296, 204)}
+    ${tassels}
+  </svg>`;
+}
+
+function zebraArt() {
+  const id = uid('zb');
+  let stripes = '';
+  for (let x = 58, i = 0; x <= 350; x += 21, i++) stripes += `<path d="M${x},50 C${x + 22},140 ${x - 18},240 ${x + (i % 2 ? 8 : -6)},350" stroke="#1A1B1D" stroke-width="${i % 3 ? 11 : 14}" fill="none"/>`;
+  const shape = 'M110,80 C150,96 250,96 290,80 L322,120 C302,160 302,240 322,280 L290,320 C250,304 150,304 110,320 L78,280 C98,240 98,160 78,120 Z';
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Zebra hide">
+    <defs><clipPath id="${id}"><path d="${shape}"/></clipPath></defs>
+    <rect width="400" height="400" fill="#E9E6DF"/>
+    <path d="${shape}" fill="#FAF9F5"/>
+    <g clip-path="url(#${id})">${stripes}</g>
+    <path d="${shape}" fill="none" stroke="#CFC9BC" stroke-width="2"/>
+  </svg>`;
+}
+
+function locomotiveArt() {
+  let sleepers = '';
+  for (let x = 10; x < 400; x += 26) sleepers += `<rect x="${x}" y="304" width="14" height="6" fill="#8A7A62"/>`;
+  const wheel = (cx, cy, r) => `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="#1F2326" stroke="#9E3527" stroke-width="4"/><line x1="${cx - r + 4}" y1="${cy}" x2="${cx + r - 4}" y2="${cy}" stroke="#555" stroke-width="2"/><line x1="${cx}" y1="${cy - r + 4}" x2="${cx}" y2="${cy + r - 4}" stroke="#555" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="4" fill="#9E3527"/></g>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Steam locomotive">
+    <rect width="400" height="400" fill="#DDEBF5"/>
+    <rect y="300" width="400" height="100" fill="#E4D6BE"/>
+    ${sleepers}
+    <line x1="0" y1="302" x2="400" y2="302" stroke="#5B5B5B" stroke-width="3"/>
+    <g fill="#fff" opacity=".85"><circle cx="126" cy="128" r="16"/><circle cx="104" cy="108" r="20"/><circle cx="76" cy="92" r="24"/></g>
+    <rect x="128" y="146" width="20" height="46" fill="#1F2326"/><rect x="122" y="142" width="32" height="8" fill="#1F2326"/>
+    <rect x="118" y="190" width="150" height="70" rx="12" fill="#1F2326"/>
+    <rect x="96" y="196" width="32" height="60" rx="4" fill="#2B3034"/>
+    <ellipse cx="200" cy="190" rx="15" ry="13" fill="#2B3034"/>
+    <rect x="262" y="148" width="74" height="112" fill="#2B3034"/>
+    <rect x="256" y="142" width="86" height="10" fill="#1F2326"/>
+    <rect x="280" y="166" width="38" height="34" fill="#DDEBF5"/>
+    <rect x="96" y="258" width="248" height="12" fill="#111"/>
+    <polygon points="96,258 70,290 96,290" fill="#9E3527"/>
+    ${wheel(112, 286, 13)} ${wheel(160, 280, 22)} ${wheel(214, 280, 22)} ${wheel(268, 280, 22)} ${wheel(320, 286, 14)}
+    <line x1="160" y1="280" x2="268" y2="280" stroke="#8A8F94" stroke-width="5"/>
+  </svg>`;
+}
+
+function flagArt() {
+  const x = 104, y = 76, w = 240, h = 160, u = h / 24;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Flag of Botswana">
+    <rect width="400" height="400" fill="#EEF1F3"/>
+    <rect x="92" y="54" width="10" height="300" fill="#70757A"/>
+    <circle cx="97" cy="52" r="8" fill="#A8AEB3"/>
+    <rect x="72" y="348" width="50" height="10" fill="#70757A"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#6DA9D2"/>
+    <rect x="${x}" y="${y + 9 * u}" width="${w}" height="${6 * u}" fill="#fff"/>
+    <rect x="${x}" y="${y + 10 * u}" width="${w}" height="${4 * u}" fill="#121417"/>
+    <rect x="${x + 70}" y="${y}" width="36" height="${h}" fill="#000" opacity=".05"/>
+    <rect x="${x + 168}" y="${y}" width="30" height="${h}" fill="#fff" opacity=".08"/>
+  </svg>`;
+}
+
+function genericArt(o = {}) {
+  const letter = (o.dept || 'O').slice(0, 1);
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Object without photo">
+    <rect width="400" height="400" fill="#E3E8EC"/>
+    <rect x="110" y="270" width="180" height="70" fill="#C7D0D7"/>
+    <rect x="96" y="262" width="208" height="12" fill="#B3BEC6"/>
+    <path d="M170,120 C150,150 150,230 176,262 L224,262 C250,230 250,150 230,120 Z" fill="#9FACB6"/>
+    <rect x="176" y="104" width="48" height="18" rx="3" fill="#9FACB6"/>
+    <text x="200" y="215" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-size="46" font-weight="800" fill="#E3E8EC">${letter}</text>
+    <text x="200" y="372" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-size="14" fill="#5E6770">Photo to follow (digitisation)</text>
+  </svg>`;
+}
+
+const ART = { basket: basketArt, rockart: rockArt, stonetool: stoneToolArt, beads: beadsArt, pot: potArt, segaba: segabaArt, stool: stoolArt, painting: paintingArt, tapestry: tapestryArt, zebra: zebraArt, locomotive: locomotiveArt, flag: flagArt, generic: genericArt };
+
+/* ---------- exhibition key visuals (800 × 600) ---------- */
+function exAt60() {
+  let top = '', bot = '';
+  for (let x = 0; x < 800; x += 40) {
+    top += `<polygon points="${x},212 ${x + 40},212 ${x + 20},180" fill="#121417"/>`;
+    bot += `<polygon points="${x},388 ${x + 40},388 ${x + 20},420" fill="#121417"/>`;
+  }
+  return `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Botswana at 60 key visual">
+    <rect width="800" height="600" fill="#6DA9D2"/>
+    <rect y="225" width="800" height="150" fill="#fff"/>
+    <rect y="245" width="800" height="110" fill="#121417"/>
+    ${top}${bot}
+    <text x="400" y="322" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-size="64" font-weight="900" font-stretch="125%" fill="#fff" letter-spacing="2">1966 — 2026</text>
+    <text x="400" y="120" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-size="28" font-weight="700" fill="#121417" letter-spacing="8">PULA</text>
+  </svg>`;
+}
+function exTsodilo() {
+  const fig = (x, y) => `<g transform="translate(${x} ${y})" stroke="#F4E6D0" stroke-linecap="round" fill="none"><circle cx="0" cy="-26" r="5" fill="#F4E6D0" stroke="none"/><line x1="0" y1="-20" x2="1" y2="4" stroke-width="4"/><line x1="1" y1="4" x2="-8" y2="24" stroke-width="3"/><line x1="1" y1="4" x2="10" y2="22" stroke-width="3"/><line x1="0" y1="-14" x2="12" y2="-6" stroke-width="3"/></g>`;
+  return `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Tsodilo Hills silhouette with rock art figures">
+    <rect width="800" height="600" fill="#E3A96A"/>
+    <circle cx="610" cy="170" r="70" fill="#F1C98E"/>
+    <path d="M0,420 C80,400 120,250 200,210 C270,176 330,260 380,330 C420,380 460,350 500,300 C560,230 610,280 660,340 C710,400 760,410 800,405 L800,600 L0,600 Z" fill="#9C4E1E"/>
+    <path d="M0,470 C120,440 220,430 330,450 C460,470 600,430 800,450 L800,600 L0,600 Z" fill="#6E3512"/>
+    <g fill="#F4E6D0"><ellipse cx="220" cy="300" rx="34" ry="16"/><ellipse cx="196" cy="288" rx="14" ry="10"/><polygon points="186,294 170,270 178,264 198,284"/></g>
+    <g stroke="#F4E6D0" stroke-width="4" stroke-linecap="round"><line x1="204" y1="312" x2="202" y2="340"/><line x1="236" y1="312" x2="240" y2="340"/></g>
+    ${fig(290, 330)}${fig(312, 336)}
+  </svg>`;
+}
+function exArt() {
+  return `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Paintings in the national art gallery">
+    <rect width="800" height="600" fill="#ECEFF1"/>
+    <rect y="470" width="800" height="130" fill="#C9B79C"/>
+    <rect x="90" y="140" width="220" height="280" fill="#2F2A26"/><rect x="104" y="154" width="192" height="252" fill="#B5652B"/><circle cx="200" cy="250" r="54" fill="#EAD2A0"/><rect x="104" y="330" width="192" height="76" fill="#4A2E1D"/>
+    <rect x="360" y="180" width="170" height="130" fill="#2F2A26"/><rect x="372" y="192" width="146" height="106" fill="#6DA9D2"/><rect x="372" y="262" width="146" height="36" fill="#121417"/>
+    <rect x="580" y="120" width="140" height="190" fill="#2F2A26"/><rect x="592" y="132" width="116" height="166" fill="#EAD2A0"/><path d="M592,260 C630,220 670,250 708,210 L708,298 L592,298 Z" fill="#8C4617"/>
+    <rect x="380" y="430" width="200" height="20" fill="#4A2E1D"/><rect x="396" y="450" width="10" height="40" fill="#4A2E1D"/><rect x="554" y="450" width="10" height="40" fill="#4A2E1D"/>
+  </svg>`;
+}
+function exKalahari() {
+  return `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Kalahari dunes with acacia tree">
+    <rect width="800" height="600" fill="#F2DDB6"/>
+    <circle cx="220" cy="190" r="64" fill="#D0692E"/>
+    <path d="M0,360 C160,300 300,330 420,300 C560,264 680,300 800,280 L800,600 L0,600 Z" fill="#D9A866"/>
+    <path d="M0,440 C180,390 340,430 500,400 C620,378 720,400 800,390 L800,600 L0,600 Z" fill="#C98A4B"/>
+    <path d="M0,520 C200,480 420,520 800,480 L800,600 L0,600 Z" fill="#B5652B"/>
+    <rect x="596" y="250" width="10" height="90" fill="#3B2A1C"/><path d="M601,300 L570,262 M601,286 L632,256" stroke="#3B2A1C" stroke-width="6"/>
+    <ellipse cx="600" cy="250" rx="92" ry="20" fill="#3E4A2C"/>
+  </svg>`;
+}
+
+// Exhibition key visuals, resolved by name from EXHIBITIONS[].art.
+// The prototype looked these up as globals on the window object, which stops
+// working under module scope -- so the mapping is explicit.
+const EX_ART = { exAt60, exTsodilo, exArt, exKalahari };
+function exArtwork(e) { return (EX_ART[e.art] || genericArt)(e); }
+
+/* ---------- small line icons ---------- */
+const ICON = {
+  grid: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="11" height="11"/><rect x="21" y="4" width="11" height="11"/><rect x="4" y="21" width="11" height="11"/><rect x="21" y="21" width="11" height="11"/></svg>',
+  qr: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="10" height="10"/><rect x="22" y="4" width="10" height="10"/><rect x="4" y="22" width="10" height="10"/><path d="M22 22h4v4h-4zM28 28h4v4h-4zM22 30v2M30 22h2"/></svg>',
+  tour: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="18" cy="18" rx="14" ry="6"/><path d="M18 4v28M9 9l-3-3M27 9l3-3"/><circle cx="18" cy="18" r="3"/></svg>',
+  ar: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 4l12 7v14l-12 7-12-7V11z"/><path d="M6 11l12 7 12-7M18 18v14"/></svg>',
+  screen: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="28" height="19"/><path d="M13 31h10M18 24v7"/><circle cx="18" cy="14.5" r="3.5"/></svg>',
+  route: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 30c-3 0-5-2-5-4s2-4 5-4h18c3 0 5-2 5-4s-2-4-5-4H12"/><circle cx="9" cy="8" r="4"/><circle cx="27" cy="28" r="4"/></svg>',
+  pin: '<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 24s8-7.5 8-13a8 8 0 10-16 0c0 5.5 8 13 8 13z"/><circle cx="13" cy="11" r="3"/></svg>',
+  box: '<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l10-5 10 5v10l-10 5-10-5z"/><path d="M3 8l10 5 10-5M13 13v10"/></svg>',
+  search: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>',
+  menu: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+  close: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>',
+};
+
+/* ---------- derived views: detail crop and gallery scene ---------- */
+function innerOf(svg) { return svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, ''); }
+function cropArt(svg) { return svg.replace('viewBox="0 0 400 400"', 'viewBox="116 116 168 168"'); }
+function roomScene(svg) {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="The object on display in the gallery">
+    <rect width="400" height="400" fill="#E6E8EA"/>
+    <rect y="300" width="400" height="100" fill="#CFC7BA"/>
+    <rect y="296" width="400" height="6" fill="#B6AE9F"/>
+    <polygon points="148,0 252,0 316,296 84,296" fill="#FFF6DF" opacity=".5"/>
+    <rect x="96" y="272" width="208" height="28" fill="#9BA3AA"/>
+    <rect x="96" y="266" width="208" height="8" fill="#B4BBC1"/>
+    <g transform="translate(104 80) scale(0.48)">${innerOf(svg)}</g>
+    <rect x="104" y="80" width="192" height="192" fill="#BCD3E4" opacity=".16"/>
+    <rect x="104" y="80" width="192" height="192" fill="none" stroke="#8E979F" stroke-width="3"/>
+    <rect x="318" y="150" width="56" height="42" rx="2" fill="#fff" stroke="#C4C9CD"/>
+    <rect x="324" y="158" width="32" height="5" fill="#8E979F"/><rect x="324" y="169" width="44" height="3" fill="#C4C9CD"/><rect x="324" y="176" width="38" height="3" fill="#C4C9CD"/>
+    <g fill="#5E6770" opacity=".5"><circle cx="46" cy="214" r="17"/><path d="M24,300 C24,248 68,248 68,300 Z"/></g>
+  </svg>`;
+}
+
+/* ------------------------------------------------------------------
+   Sample content — every record here is demo data for the prototype.
+   The museum will replace it through the staff area (CMS).
+------------------------------------------------------------------- */
+const DEPTS = [
+  { key: 'Archaeology', code: 'ARC' },
+  { key: 'Ethnography', code: 'ETH' },
+  { key: 'Natural History', code: 'NAT' },
+  { key: 'History', code: 'HIS' },
+  { key: 'Art', code: 'ART' },
+];
+
+const LOCATIONS = [
+  'Gallery 1 · Tsodilo',
+  'Gallery 1 · Deep Time',
+  'Gallery 2 · People & Crafts',
+  'Gallery 3 · Music & Sound',
+  'Gallery 4 · Kalahari Life',
+  'Art Gallery · Room A',
+  'Art Gallery · Room B',
+  'Museum courtyard',
+  'Special exhibition · Botswana at 60',
+  'Store · on request',
+];
+
+const SEED_OBJECTS = [
+  {
+    id: 'BNM-ETH-0142', art: 'basket', dept: 'Ethnography',
+    title: 'Coiled basket with “Tears of the Giraffe” pattern',
+    origin: 'Hambukushu weaver, Etsha, Ngamiland', date: 'c. 1985',
+    material: 'Mokola palm leaf, natural motsentsila dye', dims: 'Ø 38 cm, H 12 cm',
+    location: 'Gallery 2 · People & Crafts',
+    text: 'Baskets from north-western Botswana are coiled from strips of mokola palm leaf and coloured with natural dyes. Every pattern has a name – this one, rows of small dark triangles, is known as “Tears of the Giraffe”. Weavers learn the designs from older relatives and adapt them, so no two baskets are the same.',
+  },
+  {
+    id: 'BNM-ARC-0031', art: 'rockart', dept: 'Archaeology',
+    title: 'Rock painting tracing: eland and hunters',
+    origin: 'Tsodilo Hills, Ngamiland', date: 'Tracing 1990s; painting undated',
+    material: 'Pigment on polyester film', dims: '84 × 60 cm',
+    location: 'Gallery 1 · Tsodilo',
+    text: 'Tsodilo, Botswana’s first UNESCO World Heritage Site, holds more than 4,500 rock paintings. Because the originals cannot leave the hills, archaeologists record them as full-size tracings. This sheet documents an eland – an animal of great spiritual importance – together with small human figures.',
+  },
+  {
+    id: 'BNM-ARC-0217', art: 'stonetool', dept: 'Archaeology',
+    title: 'Hand axe',
+    origin: 'Kalahari, Central District', date: 'Early Stone Age',
+    material: 'Quartzite', dims: 'L 16 cm',
+    location: 'Gallery 1 · Deep Time',
+    text: 'Shaped by striking flakes from both faces of a stone, hand axes were all-purpose tools used for hundreds of thousands of years. Finds like this show that people lived in the Kalahari long before it became the landscape we know today.',
+  },
+  {
+    id: 'BNM-ARC-0388', art: 'beads', dept: 'Archaeology',
+    title: 'String of ostrich eggshell beads',
+    origin: 'San community, Ghanzi District', date: '20th century',
+    material: 'Ostrich eggshell, sinew', dims: 'L 62 cm',
+    location: 'Store · on request',
+    text: 'Ostrich eggshell beads are among the oldest ornaments made by people in southern Africa. Each bead is broken from the shell, drilled and ground smooth by hand. Strings like this were – and still are – given as gifts that bind friends and families together.',
+  },
+  {
+    id: 'BNM-ETH-0290', art: 'pot', dept: 'Ethnography',
+    title: 'Clay storage pot (nkgo)',
+    origin: 'Bakwena potter, Molepolole', date: 'c. 1950',
+    material: 'Fired clay, burnished', dims: 'H 44 cm, Ø 40 cm',
+    location: 'Gallery 2 · People & Crafts',
+    text: 'Large pots like this kept water and sorghum beer (bojalwa) cool inside the home. The potter built the body from coils of clay, smoothed the surface with a stone and decorated the shoulder with an incised zigzag band before firing.',
+  },
+  {
+    id: 'BNM-ETH-0077', art: 'segaba', dept: 'Ethnography',
+    title: 'Segaba (one-string fiddle)',
+    origin: 'Kweneng District', date: 'c. 1970',
+    material: 'Wood, tin, wire, fibre bow', dims: 'L 98 cm',
+    location: 'Gallery 3 · Music & Sound',
+    text: 'The segaba is a bowed instrument with a single string stretched along a wooden stick and a tin used as a resonator. It accompanies songs about everyday life, love and travel and is still played in Botswana today.',
+  },
+  {
+    id: 'BNM-ETH-0158', art: 'stool', dept: 'Ethnography',
+    title: 'Carved wooden stool',
+    origin: 'Bayei carver, Okavango', date: 'Mid-20th century',
+    material: 'Hardwood', dims: 'H 28 cm, Ø 46 cm',
+    location: 'Store · on request',
+    text: 'Carved from a single block of wood, stools like this belonged to the head of a household and were offered to honoured guests. Tool marks on the underside show how the carver worked with an adze.',
+  },
+  {
+    id: 'BNM-ART-0012', art: 'painting', dept: 'Art',
+    title: 'Morning at the Kgotla',
+    origin: 'Botswana painter (sample record)', date: '1972',
+    material: 'Oil on board', dims: '61 × 91 cm',
+    location: 'Art Gallery · Room A',
+    text: 'The kgotla is the traditional meeting place where a community gathers to discuss and decide its affairs. The painter captures first light over the village, when elders begin to arrive and sit beneath the tree. Works by local artists from the 1960s onwards form the core of the national art collection.',
+  },
+  {
+    id: 'BNM-ART-0045', art: 'tapestry', dept: 'Art',
+    title: 'Tapestry: Village Life',
+    origin: 'Lentswe la Oodi Weavers, Oodi', date: '1981',
+    material: 'Hand-spun wool', dims: '120 × 180 cm',
+    location: 'Art Gallery · Room B',
+    text: 'The weaving workshop at Oodi, founded in the early 1970s, became known for large tapestries that tell stories of village life. Cattle, rondavels, fields and people are woven in bold, flat colours – a visual language that still shapes design in Botswana.',
+  },
+  {
+    id: 'BNM-NAT-0503', art: 'zebra', dept: 'Natural History',
+    title: 'Plains zebra hide',
+    origin: 'Makgadikgadi Pans', date: 'Collected 1988',
+    material: 'Tanned hide', dims: '210 × 140 cm',
+    location: 'Gallery 4 · Kalahari Life',
+    text: 'The zebra is Botswana’s national animal and appears on the coat of arms. Its black and white stripes are echoed in the national flag as a symbol of people living together in harmony. Each year thousands of zebras migrate between the Makgadikgadi Pans and the Boteti River.',
+  },
+  {
+    id: 'BNM-HIS-0004', art: 'locomotive', dept: 'History',
+    title: 'Steam locomotive',
+    origin: 'Railway through the Bechuanaland Protectorate', date: 'Early 20th century',
+    material: 'Iron, steel', dims: 'L approx. 18 m',
+    location: 'Museum courtyard',
+    text: 'The railway line built through Bechuanaland in the 1890s connected the territory with the Cape and Bulawayo and shaped where towns grew. This locomotive in the museum courtyard is a favourite with school groups.',
+  },
+  {
+    id: 'BNM-HIS-0019', art: 'flag', dept: 'History',
+    title: 'Flag from the first Independence Day',
+    origin: 'Gaborone', date: '30 September 1966',
+    material: 'Cotton', dims: '90 × 135 cm',
+    location: 'Special exhibition · Botswana at 60',
+    text: 'On 30 September 1966 the Bechuanaland Protectorate became the Republic of Botswana. Light blue stands for water and rain – “pula”, also the national motto – and the black band with white borders for harmony between peoples. In 2026 the country celebrates sixty years of independence.',
+  },
+].map((o, i) => ({ ...o, status: 'published', onDisplay: !o.location.startsWith('Store'), added: Date.UTC(2026, 7, 1 + i), seed: true }));
+
+const EXHIBITIONS = [
+  { key: 'at60', art: 'exAt60', kind: 'Special exhibition', dates: '30 Sep 2026 – 28 Mar 2027', title: 'Botswana at 60', text: 'Sixty objects for sixty years of independence: from the first Independence Day flag to the design of today’s Gaborone.' },
+  { key: 'tsodilo', art: 'exTsodilo', kind: 'Permanent gallery', dates: 'Gallery 1', title: 'Tsodilo – Mountains of the Gods', text: 'Rock art, tools and stories from Botswana’s first World Heritage Site.' },
+  { key: 'art', art: 'exArt', kind: 'National Art Gallery', dates: 'Rooms A & B', title: 'Painters of the Nation', text: 'Works by Botswana artists from the 1960s to today.' },
+  { key: 'kalahari', art: 'exKalahari', kind: 'Permanent gallery', dates: 'Gallery 4', title: 'Kalahari Life', text: 'Plants and animals that thrive in the sand – and how people live with them.' },
+];
+
+const EVENTS = [
+  { d: '2026-10-03', time: '10:00–12:00', kind: 'Family morning', title: 'Weave a pattern: basket designs for kids', place: 'Education room' },
+  { d: '2026-10-06', time: '14:00', kind: 'Curator’s tour', title: 'Botswana at 60 – behind the objects', place: 'Special exhibition' },
+  { d: '2026-10-15', time: '17:30', kind: 'Talk', title: 'Painters of the 1960s and 70s', place: 'Art Gallery' },
+  { d: '2026-10-24', time: '09:30–12:30', kind: 'School holiday workshop', title: 'Rock art of Tsodilo: paint like the ancestors', place: 'Courtyard' },
+];
+
+/* opening hours & prices (placeholders to be confirmed with the museum) */
+const HOURS = { 0: [9, 17], 1: null, 2: [9, 18], 3: [9, 18], 4: [9, 18], 5: [9, 18], 6: [9, 17] };
+const CAPACITY = 40;
+const TOUR_TIMES = [10, 14];
+const HOLIDAYS = { '09-30': 'Botswana Day', '10-01': 'Public holiday', '12-25': 'Christmas' };
+const TICKETS = [
+  { key: 'res', name: 'Citizens & residents', desc: 'Show your Omang or residence permit at the entrance', price: 0 },
+  { key: 'child', name: 'Children under 16 & students', desc: 'Student card required for students', price: 0 },
+  { key: 'intl', name: 'International visitors', desc: 'Adults visiting from abroad', price: 50 },
+  { key: 'tour', name: 'Guided tour add-on (45 min)', desc: 'Only at 10:00 and 14:00 · one per visitor', price: 30, addon: true },
+];
+
+/* ---------- simplified floor plan of the museum ---------- */
+const ROOMS = [
+  { id: 'g1a', name: 'Gallery 1 · Tsodilo', x: 44, y: 44, w: 160, h: 118 },
+  { id: 'spec', name: 'Special exhibition', sub: 'Botswana at 60', x: 214, y: 44, w: 186, h: 118 },
+  { id: 'g3', name: 'Gallery 3 · Music & Sound', x: 410, y: 44, w: 150, h: 118 },
+  { id: 'g1b', name: 'Gallery 1 · Deep Time', x: 44, y: 172, w: 160, h: 118 },
+  { id: 'g2', name: 'Gallery 2 · People & Crafts', x: 214, y: 172, w: 186, h: 118 },
+  { id: 'g4', name: 'Gallery 4 · Kalahari Life', x: 410, y: 172, w: 150, h: 118 },
+  { id: 'art', name: 'Art Gallery · Rooms A & B', x: 44, y: 300, w: 160, h: 96 },
+  { id: 'foyer', name: 'Entrance & tickets', x: 214, y: 300, w: 186, h: 96, kind: 'service' },
+  { id: 'edu', name: 'Education room', x: 410, y: 300, w: 150, h: 96, kind: 'service' },
+  { id: 'court', name: 'Courtyard · locomotive', x: 596, y: 44, w: 80, h: 352, kind: 'outdoor' },
+];
+const LOC_ROOM = {
+  'Gallery 1 · Tsodilo': 'g1a',
+  'Gallery 1 · Deep Time': 'g1b',
+  'Gallery 2 · People & Crafts': 'g2',
+  'Gallery 3 · Music & Sound': 'g3',
+  'Gallery 4 · Kalahari Life': 'g4',
+  'Art Gallery · Room A': 'art',
+  'Art Gallery · Room B': 'art',
+  'Museum courtyard': 'court',
+  'Special exhibition · Botswana at 60': 'spec',
+  'Store · on request': null,
+};
+
+/* ---------- themed tours ---------- */
+const TOURS = [
+  {
+    id: 'highlights', title: 'The museum in 60 minutes', mins: 60, start: 'Entrance hall', who: 'First-time visitors',
+    sub: 'Seven objects that tell the story of Botswana, from the Stone Age to independence.',
+    intro: 'Short on time? This route takes you through every gallery and stops at the objects our guides are asked about most.',
+    stops: ['BNM-ARC-0217', 'BNM-ARC-0031', 'BNM-ETH-0142', 'BNM-ETH-0077', 'BNM-NAT-0503', 'BNM-ART-0045', 'BNM-HIS-0019'],
+  },
+  {
+    id: 'bot60', title: 'Botswana at 60', mins: 30, start: 'Special exhibition', who: 'Anyone interested in history',
+    sub: 'Independence in 1966 and the country that grew from it.',
+    intro: 'A short route for the Diamond Jubilee: the flag of the first Independence Day, the art of the young nation and the railway that shaped its towns.',
+    stops: ['BNM-HIS-0019', 'BNM-ART-0012', 'BNM-ART-0045', 'BNM-HIS-0004'],
+  },
+  {
+    id: 'family', title: 'Family tour: animals & patterns', mins: 45, start: 'Gallery 4', who: 'Children aged 6 to 12',
+    sub: 'Stripes, beads and a one-string fiddle – with something to spot at every stop.',
+    intro: 'Made for families: each stop has one question for the children and one thing to find in the display case.',
+    stops: ['BNM-NAT-0503', 'BNM-ETH-0142', 'BNM-ARC-0388', 'BNM-ARC-0031', 'BNM-ETH-0077'],
+  },
+];
+
+/* ------------------------------------------------------------------
+   Added features: image gallery per object, museum floor plan,
+   themed tours, scan statistics for staff.
+------------------------------------------------------------------- */
+
+/* ---------------- object views (several images per object) -------- */
+function viewsOf(o) {
+  if (o.images && o.images.length) {
+    return o.images.map((src, i) => ({ html: `<img src="${src}" alt="${esc(o.title)}">`, cap: i === 0 ? 'Museum photo' : `Museum photo ${i + 1}` }));
+  }
+  const base = () => (ART[o.art] || ART.generic)(o);
+  return [
+    { html: base(), cap: 'Overall view' },
+    { html: cropArt(base()), cap: 'Detail' },
+    { html: roomScene(base(), o), cap: o.onDisplay ? `On display · ${o.location}` : 'Kept in the store' },
+  ];
+}
+
+/* ---------------- museum floor plan ------------------------------- */
+function roomOf(location) { return LOC_ROOM[location] || null; }
+function roomById(id) { return ROOMS.find((r) => r.id === id) || null; }
+function objectsInRoom(id) { return published().filter((o) => roomOf(o.location) === id); }
+
+function floorPlan({ highlight = null, stops = [], interactive = false, counts = false } = {}) {
+  const rooms = ROOMS.map((r) => {
+    const on = r.id === highlight;
+    const cls = `room ${r.kind || 'gallery'}${on ? ' on' : ''}`;
+    const n = counts ? objectsInRoom(r.id).length : null;
+    const label = r.name.replace(' · ', ' · ');
+    const lines = label.split(' · ');
+    const tag = interactive ? 'a' : 'g';
+    const attrs = interactive ? ` href="#/collection" data-act="room" data-id="${r.id}" role="link" tabindex="0" aria-label="${esc(r.name)}${n !== null ? `, ${n} objects` : ''}"` : '';
+    return `<${tag} class="${cls}"${attrs}>
+      <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="3"/>
+      <text class="rname" x="${r.x + r.w / 2}" y="${r.y + 26}" text-anchor="middle">${esc(lines[0])}</text>
+      ${lines[1] ? `<text class="rsub" x="${r.x + r.w / 2}" y="${r.y + 44}" text-anchor="middle">${esc(lines[1])}</text>` : ''}
+      ${r.sub ? `<text class="rsub" x="${r.x + r.w / 2}" y="${r.y + (lines[1] ? 62 : 44)}" text-anchor="middle">${esc(r.sub)}</text>` : ''}
+      ${n !== null && n > 0 ? `<text class="rcount" x="${r.x + r.w / 2}" y="${r.y + r.h - 14}" text-anchor="middle">${n} object${n === 1 ? '' : 's'}</text>` : ''}
+    </${tag}>`;
+  }).join('');
+  const pins = stops.map((s, i) => {
+    const r = roomById(s.room); if (!r) return '';
+    const off = (s.offset || 0);
+    return `<g class="stop"><circle cx="${r.x + r.w / 2 + off}" cy="${r.y + r.h - 34}" r="14"/><text x="${r.x + r.w / 2 + off}" y="${r.y + r.h - 29}" text-anchor="middle">${i + 1}</text></g>`;
+  }).join('');
+  return `<svg class="plan" viewBox="0 0 700 440" role="img" aria-label="Floor plan of the museum${highlight ? `, ${esc((roomById(highlight) || {}).name || '')} highlighted` : ''}">
+    <rect class="shell" x="24" y="24" width="552" height="392" rx="4"/>
+    ${rooms}
+    <g class="entrance"><rect x="286" y="412" width="48" height="8"/><polygon points="310,398 298,414 322,414"/><text x="310" y="436" text-anchor="middle" class="rsub">Entrance</text></g>
+    ${pins}
+  </svg>`;
+}
+
+/* ---------------- museum map page --------------------------------- */
+function pageMap() {
+  return `${pagehead([['#/', 'Home'], ['', 'Museum map']], 'Museum map', 'Six galleries, the art gallery and the courtyard. Select a room to see the objects on display there.')}
+  <div class="wrap" style="padding-block:32px 72px">
+    <div class="planbox big">${floorPlan({ interactive: true, counts: true })}</div>
+    <div class="planlist">
+      ${ROOMS.map((r) => { const n = objectsInRoom(r.id).length; return `<a class="planrow" href="#/collection" data-act="room" data-id="${r.id}"><b>${esc(r.name)}</b><span class="muted small">${n ? `${n} object${n === 1 ? '' : 's'} online` : 'No objects online yet'}</span></a>`; }).join('')}
+    </div>
+    <p class="small muted" style="margin-top:24px">The plan is a simplified sketch for the prototype. The real layout will be drawn with the museum.</p>
+  </div>`;
+}
+
+/* ---------------- themed tours ------------------------------------ */
+const tourById = (id) => TOURS.find((t) => t.id === id) || null;
+const tourStops = (t) => t.stops.map((id) => byId(id)).filter((o) => o && o.status === 'published');
+function toursOf(objId) { return TOURS.filter((t) => t.stops.includes(objId)); }
+function tourPlan(t) {
+  const stops = tourStops(t).map((o, i) => ({ room: roomOf(o.location) }));
+  const seen = {};
+  const spread = stops.map((s) => { const k = s.room || 'x'; seen[k] = (seen[k] || 0) + 1; return { room: s.room, offset: (seen[k] - 1) * 30 - 0 }; });
+  return floorPlan({ stops: spread });
+}
+function tourCard(t) {
+  return `<a class="tourcard" href="#/tour/${t.id}">
+    <div class="planbox">${tourPlan(t)}</div>
+    <div class="eyebrow">${t.mins} minutes · ${tourStops(t).length} stops</div>
+    <h3 class="h3">${esc(t.title)}</h3>
+    <p>${esc(t.sub)}</p>
+  </a>`;
+}
+function pageTours() {
+  return `${pagehead([['#/', 'Home'], ['', 'Tours']], 'Themed tours', 'Short routes through the galleries. Follow them on your phone – each stop is one object, and you can scan the QR code next to it at any time.')}
+  <div class="wrap" style="padding-block:32px 72px"><div class="tourgrid">${TOURS.map(tourCard).join('')}</div></div>`;
+}
+function pageTour(id) {
+  const t = tourById(id);
+  if (!t) return pageNotFound();
+  const stops = tourStops(t);
+  return `${pagehead([['#/', 'Home'], ['#/tours', 'Tours'], ['', t.title]], esc(t.title), esc(t.intro))}
+  <div class="wrap tourhead">
+    <div>
+      <dl class="tourfacts"><dt>Duration</dt><dd>${t.mins} minutes</dd><dt>Stops</dt><dd>${stops.length} objects</dd><dt>Start</dt><dd>${esc(t.start)}</dd><dt>Good for</dt><dd>${esc(t.who)}</dd></dl>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn" type="button" data-act="tour-start" data-id="${t.id}">Start the tour on a phone</button><a class="btn ghost" href="#/map">Museum map</a></div>
+    </div>
+    <div class="planbox">${tourPlan(t)}<p class="small muted" style="margin:10px 0 0">The numbers show the order of the stops.</p></div>
+  </div>
+  <div class="wrap" style="padding-bottom:72px">
+    <div class="stops">
+      ${stops.map((o, i) => `<a class="stop" href="#/object/${o.id}">
+        <span class="num">${i + 1}</span>
+        <span class="pic">${pic(o)}</span>
+        <span class="txt"><span class="eyebrow">${esc(o.onDisplay ? o.location : 'In the store')}</span><b>${esc(o.title)}</b><span class="muted small">${esc(o.date || '')}${o.date ? ' · ' : ''}${esc(o.id)}</span></span>
+      </a>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ---------------- scan statistics (staff) -------------------------- */
+const scanBase = (id) => 16 + (h32('scan-' + id) % 150);
+const scanTotal = (o) => scanBase(o.id) + (S.scans[o.id] || 0);
+const demoScans = () => Object.values(S.scans || {}).reduce((a, b) => a + b, 0);
+function scansOnDay(k) {
+  const d = fromKey(k); if (!hoursFor(k)) return 0;
+  const x = h32('day-' + k);
+  return 24 + (x % 46) + (d.getDay() === 0 || d.getDay() === 6 ? 26 : 0);
+}
+function pageStaffStats() {
+  const days = []; const d = new Date(); d.setHours(0, 0, 0, 0);
+  for (let i = 13; i >= 0; i--) { const x = new Date(d); x.setDate(x.getDate() - i); days.push(dkey(x)); }
+  const today = dkey(new Date());
+  const demo = demoScans();
+  const series = days.map((k) => ({ k, n: scansOnDay(k) + (k === today ? demo : 0), demo: k === today ? demo : 0 }));
+  const max = Math.max(1, ...series.map((s) => s.n));
+  const total = series.reduce((a, s) => a + s.n, 0);
+  const top = published().map((o) => ({ o, n: scanTotal(o), demo: S.scans[o.id] || 0 })).sort((a, b) => b.n - a.n).slice(0, 8);
+  const topMax = Math.max(1, ...top.map((t) => t.n));
+  const byRoom = {};
+  published().forEach((o) => { const r = roomOf(o.location); const name = r ? (roomById(r) || {}).name : 'Not on display'; byRoom[name] = (byRoom[name] || 0) + scanTotal(o); });
+  const rooms = Object.entries(byRoom).sort((a, b) => b[1] - a[1]);
+  const roomMax = Math.max(1, ...rooms.map((r) => r[1]));
+  const inner = `
+    <div class="kpis">
+      <div><b>${total.toLocaleString('en-GB')}</b><span>QR scans in the last 14 days</span></div>
+      <div><b>${published().length}</b><span>objects with a QR label</span></div>
+      <div><b>${Math.round(total / 14)}</b><span>scans per day on average</span></div>
+      <div><b>${esc(top[0] ? top[0].o.title.slice(0, 28) : '–')}${top[0] && top[0].o.title.length > 28 ? '…' : ''}</b><span>most scanned object</span></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <h2 class="h3" style="margin-bottom:6px">Scans per day</h2>
+        <p class="small muted" style="margin:0 0 14px">Last 14 days · Mondays are closing days</p>
+        <div class="cols" id="daychart">${series.map((s) => `<div class="col" tabindex="0" data-tip="${esc(`${fmtDate(s.k, { weekday: 'long', day: 'numeric', month: 'long' })}: ${s.n} scans${s.demo ? ` (incl. ${s.demo} from this demo)` : ''}`)}" aria-label="${esc(`${fmtDate(s.k, { weekday: 'short', day: 'numeric', month: 'short' })}: ${s.n} scans`)}"><i class="bar ${s.demo ? 'today' : ''}" style="height:${Math.round((s.n / max) * 100)}%"></i><small>${fromKey(s.k).getDate()}</small></div>`).join('')}</div>
+        <h2 class="h3" style="margin:32px 0 12px">Scans by gallery</h2>
+        <div class="chart">${rooms.map(([name, n]) => `<div class="hbar small"><span class="lbl">${esc(name)}</span><span class="track"><i style="width:${Math.round((n / roomMax) * 100)}%"></i></span><span class="n">${n}</span></div>`).join('')}</div>
+      </div>
+      <div>
+        <h2 class="h3" style="margin-bottom:6px">Most scanned objects</h2>
+        <p class="small muted" style="margin:0 0 14px">Which labels visitors actually use – helpful when planning new texts and audio.</p>
+        <div class="chart">${top.map((t) => `<div class="hbar"><a class="lbl" href="#/object/${t.o.id}">${esc(t.o.title)}</a><span class="track"><i style="width:${Math.round(((t.n - t.demo) / topMax) * 100)}%"></i><i class="demo" style="width:${Math.round((t.demo / topMax) * 100)}%"></i></span><span class="n">${t.n}</span></div>`).join('')}</div>
+        <div class="legend" style="margin-top:14px"><span><i style="background:var(--deep)"></i>Sample data</span><span><i style="background:var(--sky)"></i>Scans from this demo (${demo})</span></div>
+        <p class="small muted" style="margin-top:18px">Every “Simulate visitor scan” in this prototype is counted here, so you can see the numbers move during the presentation.</p>
+      </div>
+    </div>
+    <details style="margin-top:28px"><summary style="cursor:pointer;font-weight:600;color:var(--deep)">Show the numbers as a table</summary>
+      <div class="tablewrap" style="margin-top:12px"><table class="data" style="min-width:520px"><thead><tr><th>Object</th><th>Inventory no.</th><th>Gallery</th><th style="text-align:right">Scans</th></tr></thead><tbody>
+        ${published().map((o) => ({ o, n: scanTotal(o) })).sort((a, b) => b.n - a.n).map((t) => `<tr><td>${esc(t.o.title)}</td><td class="inv">${esc(t.o.id)}</td><td class="small">${esc(t.o.onDisplay ? t.o.location : 'Store')}</td><td style="text-align:right" class="tnum">${t.n}</td></tr>`).join('')}
+      </tbody></table></div>
+    </details>`;
+  return staffShell('staff/stats', inner);
+}
+
+/* ---------------- lightbox & tour player --------------------------- */
+let LB = { id: null, i: 0 };
+function openLight(objId, i) {
+  const o = byId(objId); if (!o) return;
+  LB = { id: objId, i };
+  const views = viewsOf(o);
+  const v = views[i] || views[0];
+  openModal(`<div class="lightbox">
+    <div class="lbtop"><span class="eyebrow" style="color:#C9D2DA">${esc(o.title)} · ${esc(v.cap)}</span><button class="iconbtn" type="button" data-act="close" aria-label="Close" style="border-color:#4A5157;color:#fff">${ICON.close}</button></div>
+    <div class="lbmain">${v.html}</div>
+    <div class="lbbar">
+      <button class="btn ghost small" type="button" data-act="lb" data-d="-1" style="color:#fff;border-color:#fff" ${views.length < 2 ? 'disabled' : ''}>← Previous</button>
+      <span class="small" style="color:#C9D2DA">${i + 1} / ${views.length}</span>
+      <button class="btn ghost small" type="button" data-act="lb" data-d="1" style="color:#fff;border-color:#fff" ${views.length < 2 ? 'disabled' : ''}>Next →</button>
+    </div>
+  </div>`, 'Enlarged image');
+}
+let TOURSTATE = { id: null, i: 0 };
+function openTour(tourId, i = 0) {
+  const t = tourById(tourId); if (!t) return;
+  const stops = tourStops(t); if (!stops.length) return;
+  i = Math.max(0, Math.min(stops.length - 1, i));
+  TOURSTATE = { id: tourId, i };
+  const o = stops[i];
+  const last = i === stops.length - 1;
+  openModal(`<div class="phonewrap">
+    <div class="explain">
+      <div class="eyebrow" style="color:#9FC7E4">Tour on the visitor’s phone</div>
+      <h2>${esc(t.title)}</h2>
+      <ol><li>The visitor opens the tour from the website or from any QR label.</li><li>Each stop shows one object with a short text.</li><li>At the object, the QR code opens the same record with all the details.</li></ol>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sky" type="button" data-act="close">Close</button><a class="btn ghost" href="#/tour/${t.id}" style="color:#fff;border-color:#fff">Tour page</a></div>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="urlbar"><span>${esc(objectURL(o.id).replace(/^https?:\/\//, '').replace(/#.*$/, '') + 'tour/' + t.id)}</span></div>
+        <div class="scroll">
+          <div class="mhead"><span class="brand">${emblem()}<b>${esc(t.title)}</b></span><span class="small muted">${i + 1}/${stops.length}</span></div>
+          <div class="tourbar"><i style="width:${Math.round(((i + 1) / stops.length) * 100)}%"></i></div>
+          <div class="mpic">${pic(o)}</div>
+          <div class="mbody">
+            <div class="eyebrow">Stop ${i + 1} · ${esc(o.onDisplay ? o.location : 'In the store')}</div>
+            <h3>${esc(o.title)}</h3>
+            <p>${esc((o.text || '').split('. ').slice(0, 2).join('. ') + (o.text ? '.' : ''))}</p>
+            <a class="btn ghost small" href="#/object/${o.id}" data-act="close-nav">Full object page</a>
+            <div class="tournav">
+              <button class="btn ghost small" type="button" data-act="tour-go" data-d="-1" ${i === 0 ? 'disabled' : ''}>Back</button>
+              ${last ? '<button class="btn small" type="button" data-act="close">Finish tour</button>' : '<button class="btn small" type="button" data-act="tour-go" data-d="1">Next stop</button>'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`, 'Tour preview');
+}
+
+
+/* ---------------- tooltips for the statistics charts -------------- */
+function bindTips() {
+  const host = $('#daychart'); if (!host) return;
+  let tip = $('#chart-tip');
+  if (!tip) { document.body.insertAdjacentHTML('beforeend', '<div class="charttip" id="chart-tip" hidden></div>'); tip = $('#chart-tip'); }
+  const show = (el, x, y) => {
+    tip.textContent = el.dataset.tip; tip.hidden = false;
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(window.innerWidth - r.width - 12, Math.max(12, x - r.width / 2)) + 'px';
+    tip.style.top = Math.max(12, y - r.height - 14) + 'px';
+  };
+  host.addEventListener('mousemove', (e) => { const el = e.target.closest('[data-tip]'); if (el) { const r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); } else tip.hidden = true; });
+  host.addEventListener('mouseleave', () => { tip.hidden = true; });
+  host.addEventListener('focusin', (e) => { const el = e.target.closest('[data-tip]'); if (el) { const r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); } });
+  host.addEventListener('focusout', () => { tip.hidden = true; });
+}
+
+/* ------------------------------------------------------------------
+   Botswana National Museum — clickable website prototype
+   One file, hash router, state kept in this browser (localStorage).
+------------------------------------------------------------------- */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = (n) => String(n).padStart(2, '0');
+const dkey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const fmtDate = (k, o = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) => fromKey(k).toLocaleDateString('en-GB', o);
+const money = (n) => (n === 0 ? 'Free' : `P ${n.toFixed(2)}`);
+const hh = (h) => `${pad(h)}:00`;
+function h32(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+/* ---------------- state ---------------- */
+const LS = 'bnm-prototype-v1';
+const fresh = () => ({ objects: SEED_OBJECTS.map((o) => ({ ...o })), bookings: [], scans: {} });
+function load() { try { const raw = localStorage.getItem(LS); if (raw) { const s = JSON.parse(raw); if (s && Array.isArray(s.objects) && Array.isArray(s.bookings)) {
+        s.scans = s.scans || {};
+        s.objects.forEach((o) => { if (!o.images) o.images = o.image ? [o.image] : []; });
+        return s;
+      } } } catch (e) { /* storage unavailable */ } return null; }
+let S = load() || fresh();
+function save() { try { localStorage.setItem(LS, JSON.stringify(S)); return true; } catch (e) { return false; } }
+
+const byId = (id) => S.objects.find((o) => o.id === id);
+const published = () => S.objects.filter((o) => o.status === 'published');
+const deptCode = (dept) => (DEPTS.find((d) => d.key === dept) || { code: 'OBJ' }).code;
+function pic(o) { const src = (o.images && o.images[0]) || o.image; if (src) return `<img src="${src}" alt="${esc(o.title)}">`; return (ART[o.art] || ART.generic)(o); }
+function objectURL(id) {
+  if (location.protocol.startsWith('http')) return `${location.origin}${location.pathname}#/object/${id}`;
+  return `https://museum.example/o/${id}`;
+}
+function qrSVG(text, label = 'QR code') {
+  try {
+    const q = qrcode(0, 'M'); q.addData(text); q.make();
+    const n = q.getModuleCount(); let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c},${r}h1v1h-1z`;
+    return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" role="img" aria-label="${esc(label)}"><rect width="${n}" height="${n}" fill="#fff"/><path d="${d}" fill="#121417"/></svg>`;
+  } catch (e) {
+    return `<svg viewBox="0 0 10 10" role="img" aria-label="QR code unavailable"><rect width="10" height="10" fill="#fff"/><text x="5" y="6" font-size="2" text-anchor="middle">QR</text></svg>`;
+  }
+}
+
+/* ---------------- time & capacity ---------------- */
+const WD = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+const DAYNAME = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function gabNow() {
+  try {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'Africa/Gaborone', weekday: 'short', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date()).map((x) => [x.type, x.value]));
+    return { dow: WD[p.weekday], h: Number(p.hour) % 24, m: Number(p.minute) };
+  } catch (e) { const d = new Date(); return { dow: d.getDay(), h: d.getHours(), m: d.getMinutes() }; }
+}
+function openStatus() {
+  const { dow, h } = gabNow();
+  const hrs = HOURS[dow];
+  if (hrs && h >= hrs[0] && h < hrs[1]) return { open: true, text: `Open now · until ${hh(hrs[1])}` };
+  if (hrs && h < hrs[0]) return { open: false, text: `Closed now · opens today ${hh(hrs[0])}` };
+  for (let i = 1; i <= 7; i++) { const d = (dow + i) % 7; if (HOURS[d]) return { open: false, text: `Closed now · opens ${i === 1 ? 'tomorrow' : DAYNAME[d]} ${hh(HOURS[d][0])}` }; }
+  return { open: false, text: 'Closed' };
+}
+const hoursFor = (k) => HOURS[fromKey(k).getDay()];
+const holiday = (k) => HOLIDAYS[k.slice(5)];
+function nextDays(n = 14) { const out = []; const d = new Date(); d.setHours(0, 0, 0, 0); for (let i = 0; i < n; i++) { out.push(dkey(d)); d.setDate(d.getDate() + 1); } return out; }
+function sampleOcc(k, h) {
+  const x = h32(`${k}@${h}`); const wd = fromKey(k).getDay();
+  let n = (x % 24) + (wd === 0 || wd === 6 ? 10 : 2) + (h === 11 || h === 14 ? 6 : 0);
+  if (x % 17 === 0) n = CAPACITY;
+  return Math.min(CAPACITY, n);
+}
+const onlineOcc = (k, h) => S.bookings.filter((b) => b.date === k && b.hour === h).reduce((a, b) => a + b.visitors, 0);
+const taken = (k, h) => Math.min(CAPACITY, sampleOcc(k, h) + onlineOcc(k, h));
+function isPast(k, h) { const now = new Date(); return k === dkey(now) && h <= now.getHours(); }
+function slotHours(k) { const r = hoursFor(k); if (!r) return []; const out = []; for (let h = r[0]; h < r[1]; h++) out.push(h); return out; }
+
+/* ---------------- shell ---------------- */
+const NAV = [
+  ['visit', 'Visit'], ['exhibitions', 'Exhibitions'], ['collection', 'Collection'], ['tours', 'Tours'], ['events', 'Events'], ['page/about', 'About'],
+];
+function shell() {
+  const st = openStatus();
+  document.body.insertAdjacentHTML('afterbegin', `
+  <div class="protobar" role="region" aria-label="Prototype navigation">
+    <div class="wrap">
+      <span class="tag">PROTOTYPE</span>
+      <span class="note">Capstone project with the Botswana National Museum · sample content, not the official website</span>
+      <nav aria-label="Prototype screens">
+        <a href="#/" data-pb="">Home</a><a href="#/tickets" data-pb="tickets">Tickets</a><a href="#/collection" data-pb="collection">Collection</a><a href="#/object/BNM-ETH-0142" data-pb="object">Object &amp; QR</a><a href="#/tours" data-pb="tours">Tours</a><a href="#/map" data-pb="map">Map</a><a href="#/staff" data-pb="staff">Staff area</a><button type="button" data-act="reset">Reset demo</button>
+      </nav>
+    </div>
+  </div>
+  <div class="utility">
+    <div class="wrap">
+      <div class="status ${st.open ? '' : 'closed'}"><i></i><span>${st.text}</span><span class="hide-s muted">· Gaborone time</span></div>
+      <div class="tools">
+        <a href="#/page/accessibility" class="hide-s">Accessibility</a>
+        <a href="#/staff" class="hide-s">Staff login</a>
+        <span class="lang" role="group" aria-label="Language"><button type="button" aria-pressed="true">EN</button><button type="button" aria-pressed="false" data-act="lang-tn" title="Setswana">TN</button></span>
+      </div>
+    </div>
+  </div>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="#/" aria-label="Botswana National Museum – home">${emblem()}<div><b>Botswana National Museum</b><span>&amp; Art Gallery · Gaborone</span></div></a>
+      <nav class="mainnav" id="mainnav" aria-label="Main">${NAV.map(([h, l]) => `<a href="#/${h}" data-nav="${h}">${l}</a>`).join('')}<a href="#/collection" class="mobile-only">Search the collection</a><a href="#/staff" class="mobile-only">Staff area</a></nav>
+      <div class="headactions">
+        <button class="iconbtn searchbtn" type="button" data-act="search-toggle" aria-label="Search the collection">${ICON.search}</button>
+        <a class="btn" href="#/tickets">Tickets</a>
+        <button class="iconbtn menubtn" type="button" data-act="menu" aria-label="Menu" aria-controls="mainnav">${ICON.menu}</button>
+      </div>
+    </div>
+    <div class="searchbar" id="searchbar" hidden>
+      <form class="wrap" id="topsearch" role="search"><label class="sr-only" for="topq">Search the collection</label><input type="search" id="topq" placeholder="Search objects, places, materials …"><button class="btn" type="submit">Search</button></form>
+    </div>
+  </header>
+  <div class="flagrule" aria-hidden="true"></div>
+  <main id="app" tabindex="-1"></main>
+  <footer class="site">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="brand" href="#/" style="color:#fff">${emblem()}<div><b style="color:#fff">Botswana National Museum</b><span style="color:#9AA3AB">&amp; Art Gallery</span></div></a>
+          <p style="margin:18px 0 4px">331 Independence Avenue<br>Gaborone, Botswana</p>
+          <p class="small" style="margin:0;color:#9AA3AB">Tue–Fri 09:00–18:00 · Sat–Sun 09:00–17:00 · Mon closed</p>
+          <form class="newsletter" data-act-submit="newsletter"><label class="sr-only" for="nl">E-mail for newsletter</label><input id="nl" type="email" placeholder="Newsletter: your e-mail"><button class="btn sky" type="submit">Subscribe</button></form>
+        </div>
+        <div><h4>Visit</h4><ul><li><a href="#/tickets">Tickets &amp; time slots</a></li><li><a href="#/visit">Opening hours</a></li><li><a href="#/page/groups">Groups &amp; schools</a></li><li><a href="#/map">Museum map</a></li><li><a href="#/page/accessibility">Accessibility</a></li></ul></div>
+        <div><h4>Discover</h4><ul><li><a href="#/exhibitions">Exhibitions</a></li><li><a href="#/collection">Collection Online</a></li><li><a href="#/tours">Themed tours</a></li><li><a href="#/events">Events</a></li><li><a href="#/page/virtual-tour">Virtual tour</a></li></ul></div>
+        <div><h4>Museum</h4><ul><li><a href="#/page/about">About us</a></li><li><a href="#/page/learn">Learn &amp; schools</a></li><li><a href="#/page/tsodilo">Tsodilo World Heritage Site</a></li><li><a href="#/page/press">Press</a></li><li><a href="#/staff">Staff area</a></li></ul></div>
+      </div>
+      <div class="legal"><span>Prototype · Research capstone project in cooperation with the Botswana National Museum, 2026</span><span>All objects, prices and events are sample content</span><a href="#/page/about">Imprint</a><a href="#/page/about">Privacy</a></div>
+    </div>
+  </footer>`);
+}
+
+/* ---------------- shared pieces ---------------- */
+function objCard(o) {
+  return `<a class="objcard" href="#/object/${o.id}">
+    <div class="pic">${pic(o)}${o.status === 'draft' ? '<span class="chip draft">Draft</span>' : ''}</div>
+    <div class="eyebrow">${esc(o.dept)}</div>
+    <h3>${esc(o.title)}</h3>
+    <div class="inv">${esc(o.date || '')}${o.date ? ' · ' : ''}${esc(o.id)}</div>
+  </a>`;
+}
+function exCard(e, big = false) {
+  return `<a class="excard ${big ? 'big' : 'row'}" href="#/exhibitions">
+    <div class="pic">${exArtwork(e)}</div>
+    <div class="txt">
+      <div class="eyebrow">${esc(e.kind)} · ${esc(e.dates)}</div>
+      <h3 class="${big ? 'h2' : 'h4'}">${esc(e.title)}</h3>
+      <p>${esc(e.text)}</p>
+    </div>
+  </a>`;
+}
+function eventRow(ev) {
+  const d = fromKey(ev.d);
+  return `<div class="event">
+    <div class="date"><b>${d.getDate()}</b><span>${d.toLocaleDateString('en-GB', { month: 'short' })}<br>${d.toLocaleDateString('en-GB', { weekday: 'short' })}</span></div>
+    <div><div class="eyebrow">${esc(ev.kind)}</div><h3>${esc(ev.title)}</h3><div class="meta">${esc(ev.time)} · ${esc(ev.place)}</div></div>
+    <a class="btn ghost small" href="#/tickets">Book</a>
+  </div>`;
+}
+function objLabel(o, url) {
+  return `<div class="objlabel">
+    <div class="t">
+      <div class="eyebrow">${esc(o.dept)}</div>
+      <b>${esc(o.title)}</b>
+      <span>${esc([o.origin, o.date].filter(Boolean).join(' · '))}</span>
+      <span>${esc(o.material || '')}</span>
+      <div class="inv">${esc(o.id)}</div>
+    </div>
+    <div class="q">${qrSVG(url, `QR code linking to ${o.title}`)}<small>Scan for more<br>English · Setswana</small></div>
+    <div class="stripe" aria-hidden="true"></div>
+  </div>`;
+}
+function pagehead(crumbs, title, lede = '') {
+  return `<div class="pagehead"><div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">${crumbs.map(([h, l], i) => (i < crumbs.length - 1 ? `<a href="${h}">${esc(l)}</a><span aria-hidden="true">/</span>` : `<span>${esc(l)}</span>`)).join('')}</nav>
+    <h1 class="h1">${title}</h1>${lede ? `<p class="lede">${lede}</p>` : ''}
+  </div></div>`;
+}
+
+/* ---------------- pages ---------------- */
+function pageHome() {
+  const st = openStatus();
+  const latest = [...published()].sort((a, b) => b.added - a.added).slice(0, 4);
+  return `
+  <section class="hero" aria-label="Featured exhibition">
+    <div class="band" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="copy">
+        <div class="top">
+          <div class="eyebrow">Special exhibition · 30 Sep 2026 – 28 Mar 2027</div>
+          <p>Diamond Jubilee: sixty years of independence, told through sixty objects.</p>
+        </div>
+        <h1>Botswana at 60</h1>
+        <div class="bottom">
+          <p>From the first Independence Day flag to baskets woven in Etsha – how a young nation tells its story.</p>
+          <div class="ctas"><a class="btn" href="#/tickets">Book a time slot</a><a class="btn ghost" href="#/collection">Explore the objects</a></div>
+        </div>
+      </div>
+      <div class="art">${basketArt({ bg: null })}</div>
+    </div>
+    <div class="credit">Illustration: coiled basket, “Tears of the Giraffe” pattern</div>
+  </section>
+
+  <section class="visitstrip" aria-label="Visit information">
+    <div class="wrap">
+      <div class="cell"><div class="eyebrow">Today</div><b>${st.text}</b><span>Tue–Fri 09–18 · Sat–Sun 09–17 · Mon closed</span></div>
+      <div class="cell"><div class="eyebrow">Admission</div><b>Free for citizens &amp; residents</b><span>International visitors P 50 · sample prices</span></div>
+      <div class="cell"><div class="eyebrow">Address</div><b>331 Independence Avenue</b><span>Gaborone, Botswana</span></div>
+      <div class="cta"><a class="btn sky arrow" href="#/visit">Plan your visit </a></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap welcome">
+      <div><div class="eyebrow" style="margin-bottom:10px">Dumelang – welcome</div><h2 class="h2">Botswana’s story, from the Stone Age to today</h2></div>
+      <div>
+        <p class="lede" style="margin:0">Founded in 1967, a year after independence, the National Museum and Art Gallery in Gaborone collects, researches and shares the natural and cultural heritage of Botswana. Its divisions cover archaeology, natural history, ethnography, education and art – and it cares for heritage sites across the country, including the Tsodilo Hills.</p>
+        <div class="facts">
+          <div><b>1967</b><span>founded by Act of Parliament</span></div>
+          <div><b>5</b><span>divisions, one museum</span></div>
+          <div><b>4,500+</b><span>rock paintings at Tsodilo</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule-top" id="exhibitions" style="border-top-width:1px;border-color:var(--line)">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">Exhibitions</div><h2 class="h2">On view now</h2></div><a class="btn ghost small arrow" href="#/exhibitions">All exhibitions </a></div>
+      <div class="exgrid">${exCard(EXHIBITIONS[0], true)}${EXHIBITIONS.slice(1).map((e) => exCard(e)).join('')}</div>
+    </div>
+  </section>
+
+  <section class="bg-mist">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Collection Online</div><h2 class="h2">New in the collection</h2></div>
+        <form class="teasersearch" id="teasersearch" role="search" style="display:flex;gap:8px;flex:1;max-width:460px;min-width:260px"><label class="sr-only" for="tq">Search the collection</label><input type="search" id="tq" placeholder="Search ${published().length} objects …"><button class="btn" type="submit">Search</button></form>
+      </div>
+      <div class="objgrid">${latest.map(objCard).join('')}</div>
+      <p class="small muted" style="margin:28px 0 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="chip dev">How it works</span> Objects that staff add in the staff area appear here automatically – no web developer needed. <a href="#/collection">Explore the collection →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">Tours &amp; routes</div><h2 class="h2">Find your way through the galleries</h2></div><a class="btn ghost small arrow" href="#/map">Museum map </a></div>
+      <div class="tourgrid">${TOURS.map(tourCard).join('')}</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">What’s on</div><h2 class="h2">Events in October</h2></div><a class="btn ghost small arrow" href="#/events">Full calendar </a></div>
+      <div class="events">${EVENTS.map(eventRow).join('')}</div>
+    </div>
+  </section>
+
+  <section class="bg-mist">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">Museum digital</div><h2 class="h2">Visit online, discover more in the galleries</h2></div></div>
+      <div class="digital">
+        <a href="#/collection">${ICON.grid}<span class="chip live dot">Live in prototype</span><h3>Collection Online</h3><p>Search and browse every published object record.</p></a>
+        <a href="#/object/BNM-ETH-0142">${ICON.qr}<span class="chip live dot">Live in prototype</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
+        <a href="#/tours">${ICON.route}<span class="chip live dot">Live in prototype</span><h3>Themed tours</h3><p>Short routes through the museum, made for a phone.</p></a>
+        <a href="#/page/virtual-tour">${ICON.tour}<span class="chip plan dot">Planned</span><h3>Virtual tour</h3><p>Walk through the galleries in 360° from anywhere.</p></a>
+        <a href="#/page/ar">${ICON.ar}<span class="chip plan dot">Planned</span><h3>AR in the exhibition</h3><p>See objects in 3D and in their original setting.</p></a>
+        <a href="#/page/displays">${ICON.screen}<span class="chip plan dot">Planned</span><h3>Interactive displays</h3><p>Touch screens in the galleries fed by the same database.</p></a>
+      </div>
+    </div>
+  </section>`;
+}
+
+function pageVisit() {
+  const today = new Date().getDay();
+  const order = [2, 3, 4, 5, 6, 0, 1];
+  return `${pagehead([['#/', 'Home'], ['', 'Visit']], 'Plan your visit', 'Everything you need for your visit to the National Museum and Art Gallery in Gaborone. Opening hours and prices on this page are placeholders to be confirmed with the museum.')}
+  <div class="wrap placeholder" style="padding-block:48px 80px">
+    <div>
+      <h2 class="h3" style="margin-bottom:14px">Opening hours</h2>
+      <table class="hours">${order.map((d) => `<tr class="${d === today ? 'today' : ''}"><td>${DAYNAME[d]}${d === today ? ' (today)' : ''}</td><td>${HOURS[d] ? `${hh(HOURS[d][0])} – ${hh(HOURS[d][1])}` : 'Closed'}</td></tr>`).join('')}</table>
+      <p class="small muted">Last entry one hour before closing. Closed on selected public holidays.</p>
+      <h2 class="h3" style="margin:36px 0 14px">Admission</h2>
+      <table class="hours">${TICKETS.map((t) => `<tr><td>${esc(t.name)}</td><td>${money(t.price)}</td></tr>`).join('')}<tr><td>School groups (booked via the education office)</td><td>Free</td></tr></table>
+      <div style="margin-top:28px"><a class="btn" href="#/tickets">Book a time slot</a></div>
+    </div>
+    <div>
+      <h2 class="h3" style="margin-bottom:14px">Getting here</h2>
+      <p class="prose">331 Independence Avenue, Gaborone. The museum is in the city centre and can be reached by taxi or combi. Parking information will follow.</p>
+      <h2 class="h3" style="margin:28px 0 14px">Accessibility</h2>
+      <p class="prose">Information on step-free access, seating and assistance will be added together with the museum team.</p>
+      <h2 class="h3" style="margin:28px 0 14px">Groups &amp; schools</h2>
+      <p class="prose">School classes visit free of charge. The education office plans guided visits and workshops for all school levels.</p>
+    </div>
+  </div>`;
+}
+
+function pageExhibitions() {
+  return `${pagehead([['#/', 'Home'], ['', 'Exhibitions']], 'Exhibitions', 'Special exhibitions and permanent galleries at the National Museum and Art Gallery.')}
+  <div class="wrap" style="padding-block:48px 80px"><div class="objgrid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:40px 28px">
+    ${EXHIBITIONS.map((e) => `<a class="excard" href="#/exhibitions"><div class="pic">${exArtwork(e)}</div><div class="eyebrow">${esc(e.kind)} · ${esc(e.dates)}</div><h3 class="h3">${esc(e.title)}</h3><p>${esc(e.text)}</p></a>`).join('')}
+  </div></div>`;
+}
+
+function pageEvents() {
+  return `${pagehead([['#/', 'Home'], ['', 'Events']], 'Events', 'Tours, talks and workshops for all ages.')}
+  <div class="wrap" style="padding-block:40px 80px"><div class="events">${EVENTS.map(eventRow).join('')}</div></div>`;
+}
+
+const PAGES = {
+  learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Outside prototype scope' },
+  about: { t: 'About the museum', l: 'History, mission and team of the National Museum and Art Gallery.', items: ['History since 1967', 'Divisions: Archaeology, Natural History, Ethnology, Education, Art', 'Heritage sites in the museum’s care', 'Imprint & privacy'], chip: 'Outside prototype scope' },
+  groups: { t: 'Groups & schools', l: 'Booking for school classes and larger groups.', items: ['Request form for school groups', 'Group sizes and supervision', 'Links to the ticketing system with group capacity'], chip: 'Next iteration' },
+  accessibility: { t: 'Accessibility', l: 'Step-free access, assistance and easy-to-read information.', items: ['Access & seating', 'Easy English and Setswana texts', 'Contrast and font-size options on the website'], chip: 'Next iteration' },
+  press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Outside prototype scope' },
+  tsodilo: { t: 'Tsodilo Hills', l: 'Botswana’s first UNESCO World Heritage Site, with more than 4,500 rock paintings.', items: ['Visitor information for Tsodilo', 'Link to rock-art records in the collection database', 'Future: virtual tour of the site'], chip: 'Outside prototype scope' },
+  'virtual-tour': { t: 'Virtual tour', l: '360° walk-through of the galleries, linked to the object records in the database.', items: ['360° photos of each gallery', 'Hotspots that open the object page from the collection database', 'Works on phone, desktop and VR headset'], chip: 'Planned · phase 2' },
+  ar: { t: 'AR in the exhibition', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
+  displays: { t: 'Interactive displays', l: 'Touch screens in the galleries that show content from the collection database.', items: ['Kiosk mode of the collection website', 'Themed stories per gallery', 'Content managed in the same staff area'], chip: 'Planned · phase 2' },
+};
+function pagePlaceholder(key) {
+  const p = PAGES[key];
+  if (!p) return pageNotFound();
+  return `${pagehead([['#/', 'Home'], ['', p.t]], esc(p.t), esc(p.l))}
+  <div class="wrap placeholder">
+    <div><span class="chip ${p.chip.startsWith('Planned') ? 'plan' : 'dev'}">${esc(p.chip)}</span><h2 class="h3" style="margin:16px 0 14px">What this page will contain</h2><ul>${p.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>
+    <div><p class="prose">This page is part of the full website concept but not built in the prototype. The prototype focuses on the homepage, ticketing with time slots, the collection database and QR codes.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/">Back to home</a><a class="btn ghost" href="#/collection">Collection Online</a></div></div>
+  </div>`;
+}
+function pageNotFound() {
+  return `${pagehead([['#/', 'Home'], ['', 'Not found']], 'Page not found', 'This object or page does not exist (anymore). Try the collection search.')}
+  <div class="wrap" style="padding-block:32px 80px"><a class="btn" href="#/collection">Go to Collection Online</a></div>`;
+}
+
+/* ---------------- tickets ---------------- */
+const newT = () => ({ step: 1, date: null, hour: null, q: { res: 0, child: 0, intl: 0, tour: 0 }, name: '', email: '', phone: '', country: 'Botswana', pay: 'desk', agree: false, done: null, err: {} });
+let T = newT();
+const visitorsOf = (q) => q.res + q.child + q.intl;
+const totalOf = (q) => TICKETS.reduce((a, t) => a + t.price * q[t.key], 0);
+const leftIn = (k, h) => CAPACITY - taken(k, h);
+
+function pageTickets() {
+  if (T.step === 4 && !T.done) T = newT();
+  const steps = ['Date & time', 'Tickets', 'Your details', 'Confirmation'];
+  return `${pagehead([['#/', 'Home'], ['', 'Tickets']], 'Tickets &amp; time slots', 'Book your visit online and skip the queue. Every hour, up to 40 visitors can enter – so the galleries never get too crowded.')}
+  <div class="wrap">
+    <ol class="steps" aria-label="Booking steps">${steps.map((s, i) => `<li class="${i + 1 === T.step ? 'on' : i + 1 < T.step ? 'done' : ''}" ${i + 1 === T.step ? 'aria-current="step"' : ''}>${s}</li>`).join('')}</ol>
+    <div class="tk" id="tk">${tkBody()}${tkSummary()}</div>
+  </div>`;
+}
+function tkRerender(scroll = false) {
+  const a = document.activeElement; let sel = null;
+  if (a && a.dataset && a.dataset.act) sel = `[data-act="${a.dataset.act}"]` + ['k', 'h', 'd'].map((x) => (a.dataset[x] !== undefined ? `[data-${x}="${a.dataset[x]}"]` : '')).join('');
+  $('#app').innerHTML = pageTickets();
+  if (scroll) { $('.steps').scrollIntoView({ behavior: 'smooth', block: 'start' }); const h = $('#tk h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } return; }
+  if (sel) { const el = $(sel); if (el && !el.disabled) el.focus({ preventScroll: true }); }
+}
+function tkBody() {
+  if (T.step === 1) {
+    const days = nextDays(14);
+    const dayBtns = days.map((k) => {
+      const d = fromKey(k); const closed = !hoursFor(k); const hol = holiday(k);
+      const isToday = k === dkey(new Date());
+      const allPast = !closed && slotHours(k).every((h) => isPast(k, h));
+      const dis = closed || allPast;
+      const em = closed ? 'Closed' : allPast ? 'Closed for today' : hol ? `<span class="hol">${esc(hol)}</span>` : isToday ? 'Today' : d.toLocaleDateString('en-GB', { month: 'short' });
+      return `<button type="button" class="day" data-act="day" data-k="${k}" aria-pressed="${T.date === k}" ${dis ? 'disabled' : ''}><small>${d.toLocaleDateString('en-GB', { weekday: 'short' })}</small><b>${d.getDate()}</b><em>${em}</em></button>`;
+    }).join('');
+    let slots = '<p class="muted">Choose a day to see available time slots.</p>';
+    if (T.date) {
+      slots = `<div class="slots">${slotHours(T.date).map((h) => {
+        const past = isPast(T.date, h); const left = leftIn(T.date, h); const full = left <= 0;
+        const pct = Math.round((taken(T.date, h) / CAPACITY) * 100);
+        const few = !full && left <= 8;
+        const tour = TOUR_TIMES.includes(h);
+        return `<button type="button" class="slot ${few ? 'few' : ''}" data-act="slot" data-h="${h}" aria-pressed="${T.hour === h}" ${past || full ? 'disabled' : ''}>
+          <b>${hh(h)}</b>
+          <span class="cap" aria-hidden="true"><i style="width:${past ? 0 : pct}%"></i></span>
+          <span class="left">${past ? 'Past' : full ? 'Fully booked' : few ? `Only ${left} left` : `${left} places left`}</span>
+          ${tour ? '<span class="tour">+ Guided tour</span>' : ''}
+        </button>`;
+      }).join('')}</div>`;
+    }
+    return `<div>
+      <h2>Choose a day</h2><div class="days" role="group" aria-label="Day">${dayBtns}</div>
+      <h2>Choose an entry time</h2>${slots}
+      <div class="navrow"><span></span><button class="btn arrow" type="button" data-act="tk-next" ${T.date && T.hour !== null ? '' : 'disabled'}>Continue </button></div>
+    </div>`;
+  }
+  if (T.step === 2) {
+    const vis = visitorsOf(T.q); const left = leftIn(T.date, T.hour); const max = Math.min(10, left);
+    const tourSlot = TOUR_TIMES.includes(T.hour);
+    const rows = TICKETS.map((t) => {
+      const v = T.q[t.key];
+      const plusDis = t.addon ? (!tourSlot || v >= vis) : vis >= max;
+      return `<div class="type">
+        <div><b>${esc(t.name)}</b><p>${esc(t.addon && !tourSlot ? 'Guided tours run at 10:00 and 14:00 – choose one of these slots to add a tour' : t.desc)}</p></div>
+        <div class="price">${money(t.price)}</div>
+        <div class="stepper" role="group" aria-label="${esc(t.name)}"><button type="button" data-act="qty" data-k="${t.key}" data-d="-1" aria-label="Fewer" ${v <= 0 ? 'disabled' : ''}>−</button><output aria-live="polite">${v}</output><button type="button" data-act="qty" data-k="${t.key}" data-d="1" aria-label="More" ${plusDis ? 'disabled' : ''}>+</button></div>
+      </div>`;
+    }).join('');
+    return `<div>
+      <h2>How many visitors?</h2>
+      <div class="types">${rows}</div>
+      <p class="small muted" style="margin-top:14px">Up to ${max} visitors per booking in this slot. Coming with a school class? <a href="#/page/groups">Book through the education office</a> – free of charge.</p>
+      <div class="navrow"><button class="btn ghost" type="button" data-act="tk-back">Back</button><button class="btn arrow" type="button" data-act="tk-next" ${vis > 0 ? '' : 'disabled'}>Continue </button></div>
+    </div>`;
+  }
+  if (T.step === 3) {
+    const total = totalOf(T.q); const e = T.err;
+    const pay = total === 0
+      ? `<label><input type="radio" name="pay" checked disabled><span><b>No payment needed</b><small>Your visit is free of charge.</small></span></label>`
+      : `<label><input type="radio" name="pay" value="desk" ${T.pay === 'desk' ? 'checked' : ''}><span><b>Pay at the museum on arrival</b><small>Cash or card at the front desk</small></span></label>
+         <label class="off"><input type="radio" name="pay" disabled><span><b>Mobile money</b><small>Orange Money, MyZaka, Smega – planned integration</small></span></label>
+         <label class="off"><input type="radio" name="pay" disabled><span><b>Card online</b><small>Payment provider to be selected with the museum</small></span></label>`;
+    return `<div>
+      <h2>Your details</h2>
+      <div class="formgrid">
+        <div class="field full"><label for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" value="${esc(T.name)}" ${e.name ? 'aria-invalid="true" aria-describedby="e-name"' : ''}>${e.name ? `<span class="hint" id="e-name" style="color:var(--full)">${e.name}</span>` : ''}</div>
+        <div class="field"><label for="f-email">E-mail</label><input id="f-email" type="email" autocomplete="email" value="${esc(T.email)}" ${e.email ? 'aria-invalid="true" aria-describedby="e-email"' : ''}><span class="hint" id="e-email" ${e.email ? 'style="color:var(--full)"' : ''}>${e.email || 'Your e-ticket is sent here'}</span></div>
+        <div class="field"><label for="f-phone">Mobile number <span class="muted" style="font-weight:400">(optional)</span></label><input id="f-phone" type="tel" autocomplete="tel" placeholder="+267 7x xxx xxx" value="${esc(T.phone)}"></div>
+        <div class="field"><label for="f-country">Country of residence</label><select id="f-country">${['Botswana', 'South Africa', 'Namibia', 'Zimbabwe', 'Zambia', 'Germany', 'Other'].map((c) => `<option ${T.country === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      </div>
+      <h2 style="margin-top:36px">Payment</h2>
+      <div class="pay">${pay}</div>
+      <label class="check" style="margin-top:24px"><input type="checkbox" id="f-agree" ${T.agree ? 'checked' : ''}><span>I accept the house rules and the privacy notice.${e.agree ? ` <b style="color:var(--full)">${e.agree}</b>` : ''}</span></label>
+      <div class="navrow"><button class="btn ghost" type="button" data-act="tk-back">Back</button><button class="btn" type="button" data-act="tk-confirm">Confirm booking</button></div>
+    </div>`;
+  }
+  const b = T.done;
+  const lines = TICKETS.filter((t) => b.q[t.key]).map((t) => `${b.q[t.key]} × ${t.name}`).join('<br>');
+  return `<div>
+    <div class="eyebrow" style="margin-bottom:8px">Booking confirmed</div>
+    <h2 class="h2" style="font-size:34px;margin-bottom:10px">Re a leboga – see you soon!</h2>
+    <p class="lede" style="margin:0 0 28px">Your e-ticket has been sent to ${esc(b.email)}. Show the QR code at the entrance.</p>
+    <div class="eticket">
+      <div class="l">
+        <div class="flagrule" aria-hidden="true"></div>
+        <div><div class="eyebrow">Botswana National Museum · E-ticket</div><div class="h3" style="margin-top:6px">${esc(fmtDate(b.date))}</div></div>
+        <dl><dt>Entry</dt><dd>${hh(b.hour)} – ${hh(b.hour + 1)}</dd><dt>Visitors</dt><dd>${lines}</dd><dt>Name</dt><dd>${esc(b.name)}</dd><dt>Total</dt><dd>${money(b.total)}${b.total ? ' · pay on arrival' : ''}</dd></dl>
+      </div>
+      <div class="r">${qrSVG(`BNM-TICKET|${b.code}|${b.date}|${hh(b.hour)}|${b.visitors}`, 'Ticket QR code')}<span class="code">${b.code}</span></div>
+    </div>
+    <div class="navrow" style="justify-content:flex-start"><button class="btn" type="button" data-act="tk-new">Book another visit</button><a class="btn ghost" href="#/staff/bookings">See this booking in the staff area</a></div>
+  </div>`;
+}
+function tkSummary() {
+  if (T.step === 4) {
+    return `<aside class="summary" aria-label="Before your visit"><h3>Before your visit</h3>
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry hour – you can stay until closing.</li><li>Bring your Omang or residence permit for free admission.</li><li>Guided tours meet at the front desk.</li></ul>
+      <p class="fine">Prototype: no e-mail is sent and no payment is taken. Bookings are stored only in this browser.</p></aside>`;
+  }
+  const vis = visitorsOf(T.q); const total = totalOf(T.q);
+  const lines = TICKETS.filter((t) => T.q[t.key]).map((t) => `<dt>${T.q[t.key]} × ${esc(t.name)}</dt><dd>${money(t.price * T.q[t.key])}</dd>`).join('');
+  return `<aside class="summary" aria-label="Your booking">
+    <h3>Your booking</h3>
+    <dl>
+      <dt>Day</dt><dd>${T.date ? esc(fmtDate(T.date, { weekday: 'short', day: 'numeric', month: 'short' })) : '–'}</dd>
+      <dt>Entry</dt><dd>${T.hour !== null ? `${hh(T.hour)} – ${hh(T.hour + 1)}` : '–'}</dd>
+      <dt>Visitors</dt><dd>${vis || '–'}</dd>
+      ${lines}
+    </dl>
+    <div class="total"><span>Total</span><span>${vis ? money(total) : '–'}</span></div>
+    <p class="fine">Prototype: no payment is taken and no data leaves this browser.</p>
+  </aside>`;
+}
+function tkConfirm() {
+  T.name = $('#f-name').value.trim(); T.email = $('#f-email').value.trim(); T.phone = $('#f-phone').value.trim(); T.country = $('#f-country').value; T.agree = $('#f-agree').checked;
+  const err = {};
+  if (T.name.length < 2) err.name = 'Please enter your name.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(T.email)) err.email = 'Please enter a valid e-mail address, e.g. name@example.com.';
+  if (!T.agree) err.agree = 'Please accept to continue.';
+  T.err = err;
+  if (Object.keys(err).length) { tkRerender(); const first = err.name ? '#f-name' : err.email ? '#f-email' : '#f-agree'; $(first).focus(); return; }
+  const code = 'BNM-' + Array.from({ length: 5 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+  const b = { code, date: T.date, hour: T.hour, q: { ...T.q }, visitors: visitorsOf(T.q), total: totalOf(T.q), name: T.name, email: T.email, country: T.country, created: Date.now(), checkedIn: false };
+  S.bookings.push(b); save();
+  T.done = b; T.step = 4; tkRerender(true);
+}
+
+/* ---------------- collection ---------------- */
+let CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' };
+function matches(o, q) { if (!q) return true; const hay = [o.title, o.origin, o.material, o.text, o.id, o.dept, o.date, o.location].join(' ').toLowerCase(); return q.toLowerCase().split(/\s+/).every((w) => hay.includes(w)); }
+function filtered(ignoreDept = false) {
+  let list = published().filter((o) => matches(o, CQ.q) && (!CQ.display || o.onDisplay));
+  if (CQ.room !== 'All') list = list.filter((o) => (CQ.room === 'store' ? !o.onDisplay : roomOf(o.location) === CQ.room));
+  if (!ignoreDept && CQ.dept !== 'All') list = list.filter((o) => o.dept === CQ.dept);
+  const s = CQ.sort;
+  list.sort((a, b) => (s === 'title' ? a.title.localeCompare(b.title) : s === 'new' ? b.added - a.added : a.id.localeCompare(b.id)));
+  return list;
+}
+function pageCollection() {
+  return `${pagehead([['#/', 'Home'], ['', 'Collection Online']], 'Collection Online', 'Explore objects from the museum’s archaeology, ethnography, natural history, history and art collections – including many that are not on display.')}
+  <div class="wrap">
+    <div class="filters">
+      <form class="search" id="colsearch" role="search"><label class="sr-only" for="cq">Search the collection</label><input type="search" id="cq" value="${esc(CQ.q)}" placeholder="Search by title, place, material or inventory number"><button class="btn" type="submit">Search</button></form>
+      <div class="row" id="deptchips"></div>
+      <div class="row"><label class="small muted" for="locf">Where in the museum</label><select id="locf" style="width:auto;min-height:40px">${['All', ...ROOMS.map((r) => r.id), 'store'].map((v) => `<option value="${v}" ${CQ.room === v ? 'selected' : ''}>${v === 'All' ? 'Anywhere' : v === 'store' ? 'In the store' : esc((roomById(v) || {}).name || v)}</option>`).join('')}</select><a class="small" href="#/map">Show me on the map →</a></div>
+    </div>
+    <div class="resulthead"><div id="rcount" class="muted" aria-live="polite"></div>
+      <div style="display:flex;gap:10px;align-items:center"><label for="sort" class="small muted">Sort by</label><select id="sort"><option value="inv" ${CQ.sort === 'inv' ? 'selected' : ''}>Inventory number</option><option value="title" ${CQ.sort === 'title' ? 'selected' : ''}>Title A–Z</option><option value="new" ${CQ.sort === 'new' ? 'selected' : ''}>Recently added</option></select></div>
+    </div>
+    <div id="results" style="padding-bottom:72px"></div>
+  </div>`;
+}
+function renderResults() {
+  const base = filtered(true);
+  const counts = { All: base.length }; DEPTS.forEach((d) => { counts[d.key] = base.filter((o) => o.dept === d.key).length; });
+  $('#deptchips').innerHTML = ['All', ...DEPTS.map((d) => d.key)].map((k) => `<button type="button" class="fchip" data-act="dept" data-v="${k}" aria-pressed="${CQ.dept === k}">${k === 'All' ? 'All departments' : k}<span>${counts[k]}</span></button>`).join('')
+    + `<button type="button" class="fchip" data-act="display" aria-pressed="${CQ.display}">On display now</button>`;
+  const list = filtered();
+  $('#rcount').textContent = `${list.length} ${list.length === 1 ? 'object' : 'objects'}${CQ.q ? ` for “${CQ.q}”` : ''} · all records are sample data`;
+  $('#results').innerHTML = list.length ? `<div class="objgrid">${list.map(objCard).join('')}</div>` : `<div class="empty"><p>No objects match your search.</p><button class="btn ghost" type="button" data-act="clear-search">Clear search &amp; filters</button></div>`;
+}
+
+/* ---------------- object ---------------- */
+function pageObject(id) {
+  const o = byId(id);
+  if (!o) return pageNotFound();
+  const url = objectURL(o.id);
+  const related = published().filter((x) => x.dept === o.dept && x.id !== o.id).slice(0, 4);
+  const store = !o.onDisplay;
+  const views = viewsOf(o);
+  const room = roomOf(o.location);
+  const inTours = toursOf(o.id);
+  return `
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" style="padding-top:28px"><a href="#/">Home</a><span aria-hidden="true">/</span><a href="#/collection">Collection</a><span aria-hidden="true">/</span><span>${esc(o.dept)}</span></nav>
+    ${o.status === 'draft' ? '<p class="chip draft" style="margin-top:8px">Draft · only visible to staff</p>' : ''}
+    <div class="objpage">
+      <div class="viewer">
+        <div class="gallery">
+          <div class="pic" id="mainpic">${views[0].html}<button class="zoombtn" type="button" data-act="light" data-id="${o.id}" data-i="0">Enlarge</button></div>
+          <div class="thumbs" role="group" aria-label="Images of this object">${views.map((v, i) => `<button type="button" class="thumb" data-act="view" data-id="${o.id}" data-i="${i}" aria-pressed="${i === 0}"><span class="sr-only">${esc(v.cap)}</span>${v.html}</button>`).join('')}</div>
+          <p class="small muted" id="viewcap">${esc(views[0].cap)}${views.length > 1 ? ` · ${views.length} images` : ''}</p>
+        </div>
+        <div class="tools"><button class="btn small" type="button" data-act="scan" data-id="${o.id}">Simulate visitor scan</button><button class="btn ghost small" type="button" data-act="label" data-id="${o.id}">QR label</button><button class="btn ghost small" type="button" data-act="toast" data-msg="Share: copies the object link – planned">Share</button></div>
+      </div>
+      <div>
+        <div class="eyebrow">${esc(o.dept)}</div>
+        <h1>${esc(o.title)}</h1>
+        <div class="sub">${esc([o.origin, o.date].filter(Boolean).join(' · '))}</div>
+        ${inTours.length ? `<div class="tourchips">${inTours.map((t) => `<a class="chip dev" href="#/tour/${t.id}">On the tour: ${esc(t.title)}</a>`).join('')}</div>` : ''}
+        <div class="where ${store ? 'store' : ''}">${store ? ICON.box : ICON.pin}<span>${store ? '<b>In the store</b> – can be viewed on request' : `<b>On display:</b> ${esc(o.location)}`}</span></div>
+        ${room ? `<div class="planmini"><div class="planbox">${floorPlan({ highlight: room })}</div><a class="small" href="#/map">Open the full museum map →</a></div>` : ''}
+        <div class="prose"><p>${esc(o.text || 'Description will follow.')}</p></div>
+        <dl class="facts">
+          <dt>Inventory number</dt><dd>${esc(o.id)}</dd>
+          <dt>Department</dt><dd>${esc(o.dept)}</dd>
+          <dt>Origin / maker</dt><dd>${esc(o.origin || '–')}</dd>
+          <dt>Date</dt><dd>${esc(o.date || '–')}</dd>
+          <dt>Material</dt><dd>${esc(o.material || '–')}</dd>
+          <dt>Dimensions</dt><dd>${esc(o.dims || '–')}</dd>
+          <dt>Location</dt><dd>${esc(o.location || '–')}</dd>
+        </dl>
+        <div class="eyebrow" style="margin-bottom:10px">Planned for this record</div>
+        <div class="future">
+          <div><span class="chip plan">Phase 2</span><b>Audio guide</b><span class="muted">English &amp; Setswana narration</span></div>
+          <div><span class="chip plan">Phase 2</span><b>3D model &amp; AR</b><span class="muted">From the digitisation programme</span></div>
+          <div><span class="chip plan">Phase 2</span><b>Gallery display</b><span class="muted">Same record on touch screens</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="bg-mist">
+    <div class="wrap labelwrap">
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px">In the gallery</div>
+        <h2 class="h2" style="margin-bottom:14px">One label, one QR code, one record</h2>
+        <p class="lede" style="margin:0 0 22px">Every object gets a printed label with a QR code. Visitors scan it with their phone camera and land on this page – no app, no login. Because the page is loaded from the collection database, corrections by staff are visible immediately.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" data-act="scan" data-id="${o.id}">Simulate visitor scan</button><button class="btn ghost" type="button" data-act="label" data-id="${o.id}">Print label</button></div>
+        <p class="small muted" style="margin-top:16px;word-break:break-all">QR links to: ${esc(url)}</p>
+      </div>
+      ${objLabel(o, url)}
+    </div>
+  </section>
+  ${related.length ? `<section><div class="wrap"><div class="sec-head"><div><div class="eyebrow">More from the collection</div><h2 class="h2">${esc(o.dept)}</h2></div><a class="btn ghost small arrow" href="#/collection" data-act="dept-link" data-v="${esc(o.dept)}">All ${esc(o.dept)} objects </a></div><div class="objgrid">${related.map(objCard).join('')}</div></div></section>` : ''}`;
+}
+
+/* ---------------- modals ---------------- */
+let lastFocus = null;
+function openModal(html, label) {
+  closeModal();
+  lastFocus = document.activeElement;
+  document.body.insertAdjacentHTML('beforeend', `<div class="modal" role="dialog" aria-modal="true" aria-label="${esc(label)}" id="modal">${html}</div>`);
+  document.body.style.overflow = 'hidden';
+  const f = $('#modal [data-act="close"]'); if (f) f.focus();
+}
+function closeModal() {
+  LB = { id: null, i: 0 }; TOURSTATE = { id: null, i: 0 };
+  const m = $('#modal'); if (!m) return;
+  m.remove(); document.body.style.overflow = '';
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+function openLabel(id) {
+  const o = byId(id); if (!o) return; const url = objectURL(o.id);
+  openModal(`<div class="box">
+    <button class="iconbtn close noprint" type="button" data-act="close" aria-label="Close">${ICON.close}</button>
+    <div class="eyebrow noprint">QR label · print and place next to the object</div>
+    <h2 class="h3 noprint" style="margin:6px 0 20px">${esc(o.title)}</h2>
+    ${objLabel(o, url)}
+    <p class="small muted noprint" style="margin:16px 0;word-break:break-all">QR links to: ${esc(url)}</p>
+    <div class="noprint" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" data-act="print">Print label</button><button class="btn ghost" type="button" data-act="scan" data-id="${o.id}">Simulate visitor scan</button><a class="btn ghost" href="#/object/${o.id}">Open object page</a></div>
+  </div>`, 'QR label');
+}
+function openScan(id) {
+  const o = byId(id); if (!o) return; const url = objectURL(o.id);
+  S.scans[id] = (S.scans[id] || 0) + 1; save();
+  openModal(`<div class="phonewrap">
+    <div class="explain">
+      <div class="eyebrow" style="color:#9FC7E4">In the gallery</div>
+      <h2>What a visitor sees after scanning</h2>
+      <ol><li>The visitor points the phone camera at the QR code on the label.</li><li>The object page opens in the browser – no app, no login.</li><li>Content comes live from the collection database, so staff edits appear immediately.</li></ol>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sky" type="button" data-act="close">Close</button><button class="btn ghost" type="button" data-act="scan" data-id="${o.id}" style="color:#fff;border-color:#fff">Scan again</button></div>
+    </div>
+    <div class="phone">
+      <div class="scanning" id="scanning"><div><div class="frame">${qrSVG(url)}</div><p>Scanning label …</p></div></div>
+      <div class="screen">
+        <div class="urlbar"><span>${esc(url.replace(/^https?:\/\//, ''))}</span></div>
+        <div class="scroll">
+          <div class="mhead"><span class="brand">${emblem()}<b>National Museum</b></span><span class="langs small"><b>EN</b><span class="muted">TN</span></span></div>
+          <div class="mstrip" id="mstrip">${viewsOf(o).map((v) => `<div class="mslide">${v.html}</div>`).join('')}</div>
+          <div class="mdots" id="mdots">${viewsOf(o).map((_, i) => `<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>
+          <div class="mbody">
+            <div class="eyebrow">${esc(o.dept)} · ${esc(o.id)}</div>
+            <h3>${esc(o.title)}</h3>
+            <div class="audio"><i>▶</i><span>Listen in Setswana or English<br><span style="opacity:.7">Audio guide · planned</span></span></div>
+            <dl><dt>Date</dt><dd>${esc(o.date || '–')}</dd><dt>Material</dt><dd>${esc(o.material || '–')}</dd><dt>Origin</dt><dd>${esc(o.origin || '–')}</dd></dl>
+            <p>${esc(o.text || '')}</p>
+            <a class="btn small" href="#/tickets" style="margin-top:6px">Book a guided tour</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`, 'Visitor scan simulation');
+  const sc = $('#scanning');
+  setTimeout(() => { if (sc) { sc.style.opacity = '0'; setTimeout(() => sc.remove(), 400); } }, 1400);
+  const strip = $('#mstrip');
+  if (strip) strip.addEventListener('scroll', () => {
+    const i = Math.round(strip.scrollLeft / strip.clientWidth);
+    document.querySelectorAll('#mdots i').forEach((d, j) => d.classList.toggle('on', j === i));
+  });
+}
+
+/* ---------------- staff area ---------------- */
+let SB = { date: nextDays(14).find((k) => hoursFor(k)) || dkey(new Date()) };
+let PENDING = null;
+let formImage = null;
+let formImages = [];
+function staffShell(tab, inner) {
+  const tabs = [['staff', 'Objects', `(${S.objects.length})`], ['staff/add', 'Add object', ''], ['staff/bookings', 'Bookings & time slots', `(${S.bookings.length})`], ['staff/stats', 'Scan statistics', '']];
+  return `<div class="staffbar"><div class="wrap"><div><b>Staff area</b> · Collection &amp; visitor management</div><div class="who">Signed in as: Curator (demo account) · <a href="#/" style="color:#fff">Back to website</a></div></div></div>
+  <div class="wrap" style="padding-block:24px 80px">
+    <nav class="tabs" aria-label="Staff sections">${tabs.map(([h, l, c]) => `<a href="#/${h}" class="${tab === h ? 'on' : ''}">${l} <span class="muted">${c}</span></a>`).join('')}</nav>
+    ${inner}
+  </div>`;
+}
+function pageStaffObjects() {
+  const list = [...S.objects].sort((a, b) => b.added - a.added);
+  const today = dkey(new Date());
+  const todayVis = slotHours(today).reduce((a, h) => a + taken(today, h), 0);
+  const inner = `
+    <div class="kpis">
+      <div><b>${S.objects.length}</b><span>objects in the database</span></div>
+      <div><b>${published().length}</b><span>published online</span></div>
+      <div><b>${S.objects.filter((o) => o.status === 'draft').length}</b><span>drafts</span></div>
+      <div><b>${todayVis}</b><span>visitors booked today</span></div>
+    </div>
+    <div class="sec-head" style="margin-bottom:16px"><h2 class="h3">Object records</h2><a class="btn" href="#/staff/add">+ Add object</a></div>
+    <div class="tablewrap"><table class="data">
+      <thead><tr><th></th><th>Inventory no.</th><th>Title</th><th>Department</th><th>Location</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead>
+      <tbody>${list.map((o) => `<tr class="${o.seed ? '' : 'new'}">
+        <td><div class="thumb">${pic(o)}</div></td>
+        <td class="inv">${esc(o.id)}</td>
+        <td><b>${esc(o.title)}</b>${o.seed ? '' : ' <span class="chip dev">New</span>'}</td>
+        <td>${esc(o.dept)}</td>
+        <td class="small">${esc(o.location || '–')}</td>
+        <td>${o.status === 'published' ? '<span class="chip live dot">Published</span>' : '<span class="chip draft dot">Draft</span>'}</td>
+        <td><div class="actions"><a href="#/object/${o.id}">View</a><button class="btn link" type="button" data-act="label" data-id="${o.id}">QR label</button><a href="#/staff/edit/${o.id}">Edit</a><button class="btn link" type="button" data-act="del" data-id="${o.id}" style="color:var(--full)">Delete</button></div></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  return staffShell('staff', inner);
+}
+function nextInv(dept) {
+  const code = deptCode(dept);
+  const nums = S.objects.filter((o) => o.id.startsWith(`BNM-${code}-`)).map((o) => parseInt(o.id.split('-')[2], 10) || 0);
+  return `BNM-${code}-${pad(Math.max(0, ...nums) + 1).padStart(4, '0')}`;
+}
+function pageStaffForm(editId) {
+  const o = editId ? byId(editId) : null;
+  if (editId && !o) return pageNotFound();
+  formImages = o ? (o.images || (o.image ? [o.image] : [])).slice() : [];
+  formImage = formImages[0] || null;
+  const v = o || { title: '', dept: 'Ethnography', origin: '', date: '', material: '', dims: '', location: LOCATIONS[2], text: '', status: 'published' };
+  const inner = `
+    <div class="addform">
+      <form id="objform" novalidate>
+        <h2 class="h3" style="margin-bottom:6px">${o ? 'Edit object record' : 'Add a new object'}</h2>
+        <p class="muted" style="margin:0 0 24px">${o ? 'Changes go live on the website and behind the QR code as soon as you save.' : 'Fill in what you know – you can add more details later. A QR label is created automatically.'}</p>
+        <div class="formgrid">
+          <div class="field full"><label for="o-title">Title *</label><input id="o-title" type="text" value="${esc(v.title)}" placeholder="e.g. Beaded apron" required></div>
+          <div class="field"><label for="o-dept">Department *</label><select id="o-dept" ${o ? 'disabled' : ''}>${DEPTS.map((d) => `<option ${v.dept === d.key ? 'selected' : ''}>${d.key}</option>`).join('')}</select></div>
+          <div class="field"><label for="o-inv">Inventory number</label><input id="o-inv" type="text" value="${esc(o ? o.id : nextInv(v.dept))}" readonly><span class="hint">Assigned automatically</span></div>
+          <div class="field"><label for="o-origin">Origin / maker</label><input id="o-origin" type="text" value="${esc(v.origin)}" placeholder="Community, place or artist"></div>
+          <div class="field"><label for="o-date">Date / period</label><input id="o-date" type="text" value="${esc(v.date)}" placeholder="e.g. c. 1960"></div>
+          <div class="field"><label for="o-material">Material</label><input id="o-material" type="text" value="${esc(v.material)}"></div>
+          <div class="field"><label for="o-dims">Dimensions</label><input id="o-dims" type="text" value="${esc(v.dims)}" placeholder="e.g. H 30 cm"></div>
+          <div class="field full"><label for="o-loc">Location in the museum</label><select id="o-loc">${LOCATIONS.map((l) => `<option ${v.location === l ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+          <div class="field full"><label for="o-text">Description for visitors</label><textarea id="o-text" placeholder="2–4 sentences in plain English. A Setswana version can be added later.">${esc(v.text)}</textarea></div>
+          <div class="field full"><span class="label">Photos</span>
+            <label class="upload" for="o-img"><b>Upload photos</b><span class="small muted">JPG or PNG · several at once · resized automatically · the first one is the main image</span><span class="btn ghost small">Choose files</span></label>
+            <input id="o-img" type="file" accept="image/*" multiple class="sr-only">
+            <div class="uplist" id="uplist"></div>
+          </div>
+          <fieldset class="field full" style="border:0;padding:0;margin:0"><legend class="label" style="margin-bottom:8px">Visibility</legend>
+            <label class="check"><input type="radio" name="o-status" value="published" ${v.status === 'published' ? 'checked' : ''}><span><b>Publish now</b> – visible in Collection Online and behind the QR code</span></label>
+            <label class="check" style="margin-top:8px"><input type="radio" name="o-status" value="draft" ${v.status === 'draft' ? 'checked' : ''}><span><b>Save as draft</b> – only visible to staff</span></label>
+          </fieldset>
+        </div>
+        <div class="navrow"><a class="btn ghost" href="#/staff">Cancel</a><button class="btn" type="submit">${o ? 'Save changes' : 'Save &amp; create QR label'}</button></div>
+      </form>
+      <aside class="preview" aria-label="Live preview"><div class="eyebrow">Live preview</div><div id="pv"></div></aside>
+    </div>`;
+  return staffShell(o ? 'staff' : 'staff/add', inner);
+}
+function readForm() {
+  const g = (id) => ($(id) ? $(id).value.trim() : '');
+  const dept = $('#o-dept').value;
+  return { title: g('#o-title'), dept, id: g('#o-inv'), origin: g('#o-origin'), date: g('#o-date'), material: g('#o-material'), dims: g('#o-dims'), location: $('#o-loc').value, text: g('#o-text'), status: (document.querySelector('input[name="o-status"]:checked') || {}).value || 'published', images: formImages.slice() };
+}
+function updatePreview() {
+  const f = readForm(); const tmp = { ...f, title: f.title || 'Untitled object', art: 'generic', images: formImages };
+  $('#pv').innerHTML = `<div class="card">${objCard(tmp).replace('<a class="objcard"', '<div class="objcard"').replace(/<\/a>\s*$/, '</div>')}</div>${objLabel(tmp, objectURL(f.id))}`;
+  const list = $('#uplist');
+  if (list) list.innerHTML = formImages.length
+    ? formImages.map((src, i) => `<div class="upitem"><img src="${src}" alt=""><button type="button" class="btn link" data-act="rm-img" data-i="${i}">Remove</button>${i === 0 ? '<span class="chip">Main</span>' : ''}</div>`).join('')
+    : '<p class="small muted" style="margin:0">No photos yet – the prototype shows a placeholder illustration until the museum uploads one.</p>';
+}
+function submitForm(editId) {
+  const f = readForm();
+  if (!f.title) { $('#o-title').setAttribute('aria-invalid', 'true'); $('#o-title').focus(); toast('Please enter a title.'); return; }
+  let o = editId ? byId(editId) : null;
+  if (o) { Object.assign(o, { title: f.title, origin: f.origin, date: f.date, material: f.material, dims: f.dims, location: f.location, text: f.text, status: f.status, images: formImages.slice(), image: null, onDisplay: !f.location.startsWith('Store') }); }
+  else {
+    o = { id: nextInv(f.dept), art: 'generic', dept: f.dept, title: f.title, origin: f.origin, date: f.date, material: f.material, dims: f.dims, location: f.location, text: f.text, status: f.status, images: formImages.slice(), onDisplay: !f.location.startsWith('Store'), added: Date.now(), seed: false };
+    S.objects.push(o);
+  }
+  const ok = save();
+  PENDING = () => {
+    toast(ok ? `“${o.title}” ${o.status === 'published' ? 'is live' : 'saved as draft'} · QR label ready` : 'Saved for this session (browser storage is full or blocked).');
+    openLabel(o.id);
+  };
+  location.hash = '#/staff';
+}
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => { const img = new Image(); img.onload = () => { const max = 900; const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); resolve(c.toDataURL('image/jpeg', 0.82)); }; img.onerror = reject; img.src = r.result; };
+    r.onerror = reject; r.readAsDataURL(file);
+  });
+}
+function pageStaffBookings() {
+  const days = nextDays(14);
+  const k = SB.date;
+  const hours = slotHours(k);
+  const sum = (fn) => hours.reduce((a, h) => a + fn(h), 0);
+  const cap = hours.length * CAPACITY; const tot = sum((h) => taken(k, h)); const onl = sum((h) => onlineOcc(k, h));
+  const tours = S.bookings.filter((b) => b.date === k).reduce((a, b) => a + b.q.tour, 0);
+  const bars = hours.length ? hours.map((h) => {
+    const s = sampleOcc(k, h); const o = onlineOcc(k, h); const sw = Math.min(100, (s / CAPACITY) * 100); const ow = Math.min(100 - sw, (o / CAPACITY) * 100);
+    return `<div class="capbar"><b class="tnum">${hh(h)}</b><div class="bar" role="img" aria-label="${s + o} of ${CAPACITY} places booked"><i style="width:${sw}%"></i><i class="online" style="width:${ow}%"></i></div><span class="n">${Math.min(CAPACITY, s + o)} / ${CAPACITY}</span></div>`;
+  }).join('') : '<p class="muted">The museum is closed on this day.</p>';
+  const rows = [...S.bookings].sort((a, b) => b.created - a.created);
+  const inner = `
+    <div class="days" role="group" aria-label="Day" style="margin-bottom:24px">${days.map((d) => { const dt = fromKey(d); const closed = !hoursFor(d); return `<button type="button" class="day" data-act="sday" data-k="${d}" aria-pressed="${d === k}" ${closed ? 'disabled' : ''}><small>${dt.toLocaleDateString('en-GB', { weekday: 'short' })}</small><b>${dt.getDate()}</b><em>${closed ? 'Closed' : d === dkey(new Date()) ? 'Today' : holiday(d) ? `<span class="hol">${esc(holiday(d))}</span>` : dt.toLocaleDateString('en-GB', { month: 'short' })}</em></button>`; }).join('')}</div>
+    <div class="kpis">
+      <div><b>${tot}</b><span>visitors booked on ${esc(fmtDate(k, { weekday: 'short', day: 'numeric', month: 'short' }))}</span></div>
+      <div><b>${cap ? Math.round((tot / cap) * 100) : 0}%</b><span>of ${cap} places filled</span></div>
+      <div><b>${onl}</b><span>from your demo bookings</span></div>
+      <div><b>${tours}</b><span>guided-tour participants</span></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <h2 class="h3">Time slots</h2>
+        <div class="legend"><span><i style="background:var(--sky)"></i>Sample bookings</span><span><i style="background:var(--deep)"></i>Booked in this demo</span></div>
+        ${bars}
+      </div>
+      <div>
+        <h2 class="h3" style="margin-bottom:14px">Online bookings</h2>
+        ${rows.length ? `<div class="tablewrap"><table class="data" style="min-width:520px"><thead><tr><th>Code</th><th>Visit</th><th>Name</th><th>Visitors</th><th style="text-align:right">Entry</th></tr></thead><tbody>${rows.map((b) => `<tr><td class="inv"><b>${b.code}</b></td><td class="small">${esc(fmtDate(b.date, { weekday: 'short', day: 'numeric', month: 'short' }))}, ${hh(b.hour)}</td><td>${esc(b.name)}</td><td class="tnum">${b.visitors}${b.q.tour ? ` <span class="chip">${b.q.tour} tour</span>` : ''}</td><td style="text-align:right">${b.checkedIn ? '<span class="chip live dot">Checked in</span>' : `<button class="btn small ghost" type="button" data-act="checkin" data-code="${b.code}">Check in</button>`}</td></tr>`).join('')}</tbody></table></div>`
+          : `<div class="empty" style="text-align:left;padding:24px;border:1px dashed #AEB7BF"><p style="margin:0 0 14px">No online bookings yet. Book a time slot on the website and it appears here instantly.</p><a class="btn small" href="#/tickets">Open ticket shop</a></div>`}
+      </div>
+    </div>`;
+  return staffShell('staff/bookings', inner);
+}
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function toast(msg) {
+  const old = $('.toast'); if (old) old.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div class="toast" role="status">${esc(msg)}</div>`);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { const t = $('.toast'); if (t) t.remove(); }, 3600);
+}
+
+/* ---------------- router ---------------- */
+function route() {
+  const h = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+  const [a = '', b = '', c = ''] = h.split('/');
+  closeModal();
+  const nav = $('#mainnav'); nav.classList.remove('open');
+  $('#searchbar').hidden = true;
+  let html; let title = 'Home'; let after = null;
+  switch (a) {
+    case '': html = pageHome(); break;
+    case 'visit': html = pageVisit(); title = 'Visit'; break;
+    case 'exhibitions': html = pageExhibitions(); title = 'Exhibitions'; break;
+    case 'events': html = pageEvents(); title = 'Events'; break;
+    case 'tickets': if (T.step === 4) T = newT(); html = pageTickets(); title = 'Tickets'; break;
+    case 'collection': html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
+    case 'map': html = pageMap(); title = 'Museum map'; break;
+    case 'tours': html = pageTours(); title = 'Tours'; break;
+    case 'tour': html = pageTour(b); title = (tourById(b) || {}).title || 'Tour'; break;
+    case 'object': html = pageObject(b); title = (byId(b) || {}).title || 'Object'; break;
+    case 'staff':
+      if (b === 'add') { html = pageStaffForm(null); after = () => bindForm(null); title = 'Add object'; }
+      else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
+      else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
+      else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else { html = pageStaffObjects(); title = 'Staff area'; }
+      break;
+    case 'page': html = pagePlaceholder(b); title = (PAGES[b] || {}).t || 'Page'; break;
+    default: html = pageNotFound(); title = 'Not found';
+  }
+  $('#app').innerHTML = html;
+  if (after) after();
+  document.title = `${title} · Botswana National Museum (Prototype)`;
+  document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));
+  document.querySelectorAll('[data-pb]').forEach((el) => el.classList.toggle('on', el.dataset.pb === a));
+  window.scrollTo(0, 0);
+  if (PENDING) { const p = PENDING; PENDING = null; p(); }
+}
+function bindForm(editId) {
+  const form = $('#objform'); if (!form) return;
+  form.addEventListener('input', (e) => { if (e.target.id === 'o-title') e.target.removeAttribute('aria-invalid'); updatePreview(); });
+  form.addEventListener('change', async (e) => {
+    if (e.target.id === 'o-dept') $('#o-inv').value = nextInv(e.target.value);
+    if (e.target.id === 'o-img' && e.target.files.length) {
+      for (const file of Array.from(e.target.files).slice(0, 4)) {
+        try { formImages.push(await resizeImage(file)); } catch (err) { toast('One file could not be read. Please choose JPG or PNG.'); }
+      }
+      e.target.value = '';
+    }
+    updatePreview();
+  });
+  form.addEventListener('submit', (e) => { e.preventDefault(); submitForm(editId); });
+  updatePreview();
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', (e) => {
+  /* Handle in-page links ourselves: some preview frames turn a plain
+     fragment link into a navigation of the surrounding page. */
+  if (!e.defaultPrevented && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
+    const a = e.target.closest('a[href^="#"]');
+    if (a && !a.hasAttribute('target')) {
+      e.preventDefault();
+      const to = a.getAttribute('href');
+      if (to !== location.hash) { location.hash = to; if (location.hash !== to) { history.replaceState(null, '', to); route(); } }
+      else route();
+    }
+  }
+  const t = e.target.closest('[data-act]');
+  if (!t) { if (e.target.id === 'modal') closeModal(); return; }
+  const act = t.dataset.act;
+  switch (act) {
+    case 'reset':
+      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) { S = fresh(); save(); T = newT(); CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' }; route(); toast('Demo data reset.'); }
+      break;
+    case 'lang-tn': toast('Setswana version is planned for phase 2 – Re a leboga!'); break;
+    case 'toast': toast(t.dataset.msg); break;
+    case 'search-toggle': { const sb = $('#searchbar'); sb.hidden = !sb.hidden; if (!sb.hidden) $('#topq').focus(); break; }
+    case 'menu': $('#mainnav').classList.toggle('open'); break;
+    case 'close': closeModal(); break;
+    case 'scan': openScan(t.dataset.id); break;
+    case 'view': {
+      const o = byId(t.dataset.id); if (!o) break;
+      const i = Number(t.dataset.i); const v = viewsOf(o)[i]; if (!v) break;
+      $('#mainpic').innerHTML = `${v.html}<button class="zoombtn" type="button" data-act="light" data-id="${o.id}" data-i="${i}">Enlarge</button>`;
+      $('#viewcap').textContent = `${v.cap} · ${viewsOf(o).length} images`;
+      document.querySelectorAll('.thumb').forEach((el) => el.setAttribute('aria-pressed', el === t));
+      break;
+    }
+    case 'light': openLight(t.dataset.id, Number(t.dataset.i)); break;
+    case 'lb': { const o = byId(LB.id); if (!o) break; const n = viewsOf(o).length; openLight(LB.id, (LB.i + Number(t.dataset.d) + n) % n); break; }
+    case 'tour-start': openTour(t.dataset.id, 0); break;
+    case 'tour-go': openTour(TOURSTATE.id, TOURSTATE.i + Number(t.dataset.d)); break;
+    case 'close-nav': closeModal(); break;
+    case 'label': openLabel(t.dataset.id); break;
+    case 'print': document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); break;
+    case 'day': T.date = t.dataset.k; T.hour = null; T.q.tour = 0; tkRerender(); break;
+    case 'slot': T.hour = Number(t.dataset.h); if (!TOUR_TIMES.includes(T.hour)) T.q.tour = 0; tkRerender(); break;
+    case 'qty': {
+      const k = t.dataset.k; T.q[k] = Math.max(0, T.q[k] + Number(t.dataset.d));
+      if (T.q.tour > visitorsOf(T.q)) T.q.tour = visitorsOf(T.q);
+      tkRerender(); break;
+    }
+    case 'tk-next': T.step += 1; tkRerender(true); break;
+    case 'tk-back':
+      if (T.step === 3) { T.name = $('#f-name').value; T.email = $('#f-email').value; T.phone = $('#f-phone').value; T.country = $('#f-country').value; T.agree = $('#f-agree').checked; }
+      T.step -= 1; T.err = {}; tkRerender(true); break;
+    case 'tk-confirm': tkConfirm(); break;
+    case 'tk-new': T = newT(); tkRerender(true); break;
+    case 'dept': CQ.dept = t.dataset.v; renderResults(); break;
+    case 'dept-link': CQ = { q: '', dept: t.dataset.v, display: false, sort: 'inv', room: 'All' }; break;
+    case 'room': CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: t.dataset.id }; if (location.hash === '#/collection') route(); else location.hash = '#/collection'; break;
+    case 'display': CQ.display = !CQ.display; renderResults(); break;
+    case 'clear-search': CQ = { q: '', dept: 'All', display: false, sort: 'inv', room: 'All' }; $('#cq').value = ''; if ($('#locf')) $('#locf').value = 'All'; renderResults(); break;
+    case 'del': {
+      const o = byId(t.dataset.id);
+      if (o && confirm(`Delete “${o.title}” (${o.id})? Its QR code will stop working.`)) { S.objects = S.objects.filter((x) => x.id !== o.id); save(); route(); toast(`Deleted ${o.id}.`); }
+      break;
+    }
+    case 'rm-img': formImages.splice(Number(t.dataset.i), 1); updatePreview(); break;
+    case 'checkin': { const b = S.bookings.find((x) => x.code === t.dataset.code); if (b) { b.checkedIn = true; save(); $('#app').innerHTML = pageStaffBookings(); toast(`${b.code} checked in · ${b.visitors} visitor${b.visitors > 1 ? 's' : ''}`); } break; }
+    case 'sday': SB.date = t.dataset.k; $('#app').innerHTML = pageStaffBookings(); break;
+    default: break;
+  }
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target;
+  if (f.id === 'topsearch' || f.id === 'teasersearch') {
+    e.preventDefault(); const q = (f.querySelector('input').value || '').trim();
+    CQ = { q, dept: 'All', display: false, sort: 'inv' };
+    if (location.hash === '#/collection') route(); else location.hash = '#/collection';
+  } else if (f.id === 'colsearch') {
+    e.preventDefault(); CQ.q = $('#cq').value.trim(); renderResults();
+  } else if (f.dataset.actSubmit === 'newsletter') {
+    e.preventDefault(); toast('Newsletter sign-up is part of the full website – not active in the prototype.');
+  }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'cq') { CQ.q = e.target.value.trim(); renderResults(); }
+  if (T.step === 3 && e.target.id && e.target.id.startsWith('f-')) {
+    const m = { 'f-name': 'name', 'f-email': 'email', 'f-phone': 'phone' }; if (m[e.target.id]) T[m[e.target.id]] = e.target.value;
+  }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'sort') { CQ.sort = e.target.value; renderResults(); }
+  if (e.target.id === 'locf') { CQ.room = e.target.value; renderResults(); }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+  if (!$('#modal')) return;
+  if (LB.id && $('.lightbox')) {
+    const n = viewsOf(byId(LB.id)).length;
+    if (e.key === 'ArrowRight') openLight(LB.id, (LB.i + 1) % n);
+    if (e.key === 'ArrowLeft') openLight(LB.id, (LB.i - 1 + n) % n);
+  } else if (TOURSTATE.id && $('.tournav')) {
+    if (e.key === 'ArrowRight') openTour(TOURSTATE.id, TOURSTATE.i + 1);
+    if (e.key === 'ArrowLeft') openTour(TOURSTATE.id, TOURSTATE.i - 1);
+  }
+});
+window.addEventListener('hashchange', route);
+window.addEventListener('afterprint', () => document.body.classList.remove('printing'));
+
+shell();
+route();
+
