@@ -29,5 +29,3 @@ Thumbs.db
 /tmp/
 /scratch/
 
-# scratch copy of the prototype, used to A/B the refactor against
-src/frontend/_orig_compare.html
